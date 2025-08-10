@@ -1,11 +1,19 @@
+package manager;
+
+import task.Epic;
+import task.Subtask;
+import task.Task;
+import task.TaskStatus;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class TaskManager {
-    static private final HashMap<Integer, Task> tasks = new HashMap<>();
-    static private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    static private final HashMap<Integer, Epic> epics = new HashMap<>();
-    static private int idCount;
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private int idCount;
 
     public HashMap<Integer, Task> getTasks() {
         return tasks;
@@ -94,7 +102,7 @@ public class TaskManager {
         int epicId = tempSubtask.getEpicId();
 
         if (epics.get(epicId) != null) {
-            ArrayList<Integer> tempArray = epics.get(epicId).getEpicSubtasksId();
+            List<Integer> tempArray = epics.get(epicId).getEpicSubtasksId();
             int idForDeletion = -1;
 
             for (int i : tempArray) {
@@ -116,7 +124,7 @@ public class TaskManager {
 
         if (epics.containsKey(id)) {
 
-            ArrayList<Integer> idList = epics.get(id).getEpicSubtasksId();
+            List<Integer> idList = epics.get(id).getEpicSubtasksId();
 
             for (int idItem : idList) {
                 subtasks.remove(idItem);
@@ -130,7 +138,7 @@ public class TaskManager {
 
         if (epics.containsKey(id)) {
             ArrayList<Subtask> list = new ArrayList<>();
-            ArrayList<Integer> idForList = epics.get(id).getEpicSubtasksId();
+            List<Integer> idForList = epics.get(id).getEpicSubtasksId();
             Subtask tempTask;
 
             for (int tempId : idForList) {
@@ -168,10 +176,10 @@ public class TaskManager {
                     }
                     case NEW -> {
                         allNew = allNew && true;
-                        allDone = allDone && false;
+                        allDone = false;
                     }
                     case DONE -> {
-                        allNew = allNew && false;
+                        allNew = false;
                         allDone = allDone && true;
                     }
                 }
@@ -182,12 +190,14 @@ public class TaskManager {
 
             }
 
+            Epic tempEpic = epics.get(id);
+
             if (allNew) {
-                epics.get(id).setStatus(TaskStatus.NEW);
+                tempEpic.setStatus(TaskStatus.NEW);
             } else if (allDone) {
-                epics.get(id).setStatus(TaskStatus.DONE);
+                tempEpic.setStatus(TaskStatus.DONE);
             } else {
-                epics.get(id).setStatus(TaskStatus.IN_PROGRESS);
+                tempEpic.setStatus(TaskStatus.IN_PROGRESS);
             }
         }
     }
