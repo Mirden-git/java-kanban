@@ -1,14 +1,21 @@
 package task;
 
+import java.util.Objects;
+
 public class Task {
-    //private int id;
+    private final int id;
     private String name;
     private String description;
     private TaskStatus status = TaskStatus.NEW;
 
-    public Task(String name, String description) {
+    public Task(int id, String name, String description) {
+        this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -42,5 +49,18 @@ public class Task {
                 ", description='" + description + "'" +
                 ", status=" + status +
                 "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * Objects.hashCode(id);
     }
 }
