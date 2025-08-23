@@ -14,10 +14,6 @@ public interface TaskManager {
 
     void clearListOf(TaskType taskType);
 
-//    void clearListOfSubtasks();
-//
-//    void clearListOfEpics();
-
     Task getTaskById(int id);
 
     Subtask getSubtaskById(int id);

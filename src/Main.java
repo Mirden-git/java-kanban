@@ -1,5 +1,3 @@
-import manager.HistoryManager;
-import manager.InMemoryHistoryManager;
 import manager.TaskManager;
 import manager.Managers;
 import task.TaskStatus;
@@ -9,7 +7,6 @@ public class Main {
 
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
-        HistoryManager history = Managers.getDefaultHistory();
 
         taskManager.addTask("Обычная задача 1", "Описание 1");
         taskManager.addTask("Обычная задача 2", "Описание 2");
