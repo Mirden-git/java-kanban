@@ -1,9 +1,6 @@
 package manager;
 
-import task.Epic;
-import task.Subtask;
-import task.Task;
-import task.TaskStatus;
+import task.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +12,11 @@ public interface TaskManager {
 
     List<Epic> getEpics();
 
-    void clearListOfTasks();
+    void clearListOf(TaskType taskType);
 
-    void clearListOfSubtasks();
-
-    void clearListOfEpics();
+//    void clearListOfSubtasks();
+//
+//    void clearListOfEpics();
 
     Task getTaskById(int id);
 

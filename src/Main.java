@@ -1,11 +1,15 @@
-import manager.InMemoryTaskManager;
+import manager.HistoryManager;
+import manager.InMemoryHistoryManager;
 import manager.TaskManager;
+import manager.Managers;
 import task.TaskStatus;
+import task.TaskType;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
+        HistoryManager history = Managers.getDefaultHistory();
 
         taskManager.addTask("Обычная задача 1", "Описание 1");
         taskManager.addTask("Обычная задача 2", "Описание 2");
@@ -26,7 +30,7 @@ public class Main {
         taskManager.changeTaskStatus(2, TaskStatus.DONE);
         System.out.println(taskManager.getTasks());
         System.out.println();
-        taskManager.clearListOfEpics();
+        taskManager.clearListOf(TaskType.EPIC);
 
         taskManager.changeSubtaskStatus(4, TaskStatus.DONE);
         taskManager.changeSubtaskStatus(5, TaskStatus.IN_PROGRESS);
@@ -48,8 +52,8 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println();
 
-        taskManager.clearListOfTasks();
-        taskManager.clearListOfEpics();
-        taskManager.clearListOfSubtasks();
+        taskManager.clearListOf(TaskType.TASK);
+        taskManager.clearListOf(TaskType.EPIC);
+        taskManager.clearListOf(TaskType.SUBTASK);
     }
 }

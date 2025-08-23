@@ -4,18 +4,18 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 import task.TaskStatus;
+import task.TaskType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class InMemoryTaskManager implements TaskManager, HistoryManager {
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
+public class InMemoryTaskManager implements TaskManager {
+    private final Map<Integer, Task> tasks = new HashMap<>();
+    private final Map<Integer, Subtask> subtasks = new HashMap<>();
+    private final Map<Integer, Epic> epics = new HashMap<>();
     private int idCount;
-
-    private final List<Task> historyList = new ArrayList<>();
 
     @Override
     public List<Task> getTasks() {
@@ -33,10 +33,16 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     }
 
     @Override
-    public void clearListOfTasks() {
-        tasks.clear();
+    public void clearListOf(TaskType taskType) {
+        switch (taskType) {
+            case TaskType.TASK -> tasks.clear();
+            case TaskType.SUBTASK -> subtasks.clear();
+            case TaskType.EPIC -> epics.clear();
+            default -> System.out.println("Ошибка, нет такого типа задач");
+        }
     }
 
+/*
     @Override
     public void clearListOfSubtasks() {
         subtasks.clear();
@@ -46,6 +52,7 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     public void clearListOfEpics() {
         epics.clear();
     }
+*/
 
     @Override
     public Task getTaskById(int id) {
@@ -145,7 +152,6 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
     public void deleteEpic(int id) {
 
         if (epics.containsKey(id)) {
-
             List<Integer> idList = epics.get(id).getEpicSubtasksId();
 
             for (int idItem : idList) {
@@ -224,22 +230,4 @@ public class InMemoryTaskManager implements TaskManager, HistoryManager {
             }
         }
     }
-
-    @Override
-    public void addToHistory(Task task) {
-
-        if (historyList.size() < MAX_TASKS_IN_HISTORY) {
-            historyList.addFirst(task);
-        } else {
-            historyList.removeLast();
-            historyList.addFirst(task);
-        }
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return historyList;
-    }
-
-
 }
