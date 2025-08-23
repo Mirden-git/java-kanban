@@ -46,4 +46,5 @@ public interface TaskManager {
 
     void changeEpicStatus(int id);
 
+    HistoryManager getHistoryManager();
 }

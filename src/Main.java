@@ -6,7 +6,8 @@ import task.TaskType;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
+        Managers managers = new Managers();
+        TaskManager taskManager = managers.getDefault();
 
         taskManager.addTask("Обычная задача 1", "Описание 1");
         taskManager.addTask("Обычная задача 2", "Описание 2");
@@ -21,6 +22,22 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println(taskManager.getListOfEpicSubtasks(3));
         System.out.println(taskManager.getListOfEpicSubtasks(6));
+        System.out.println();
+
+        System.out.println("история");
+        taskManager.getTaskById(1);
+        taskManager.getSubtaskById(4);
+        taskManager.getEpicById(3);
+        taskManager.getTaskById(1);
+        taskManager.getSubtaskById(4);
+        taskManager.getEpicById(3);
+        taskManager.getTaskById(1);
+        taskManager.getSubtaskById(4);
+        taskManager.getEpicById(3);
+        taskManager.getTaskById(1);
+        taskManager.getSubtaskById(4);
+        taskManager.getEpicById(3);
+        System.out.println(taskManager.getHistoryManager().getHistory());
         System.out.println();
 
         taskManager.changeTaskStatus(1, TaskStatus.IN_PROGRESS);
