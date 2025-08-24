@@ -81,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(String name, String description, int epicId) {
         idCount++;
-        Subtask subtask = new Subtask(idCount, name, description);
+        Subtask subtask = new Subtask(idCount, name, description, epicId);
         subtasks.put(idCount, subtask);
         Epic tempEpic = epics.get(epicId);
         tempEpic.addSubtaskId(idCount);

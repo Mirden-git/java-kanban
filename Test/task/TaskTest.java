@@ -1,7 +1,50 @@
 package task;
 
+import manager.Managers;
+import manager.TaskManager;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
 
+    public static TaskManager taskManager;
+
+    @BeforeAll
+    public static void beforeAll() {
+        taskManager = Managers.getDefault();
+
+        taskManager.addTask("Обычная задача 1", "Описание 1"); // id 1
+        taskManager.addTask("Обычная задача 2", "Описание 2"); // id 2
+        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 3
+        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 3); // id 4
+        taskManager.addSubtask("Подзадача 2", "Описание подзадачи 2", 3); // id 5
+        taskManager.addEpic("Эпик 2", "Описание эпика 2"); // id 6
+        taskManager.addSubtask("Подзадача 3", "Описание подзадачи 3", 6); // id 7
+    }
+
+    @Test
+    public void taskEqualItselfById() {
+        assertEquals(taskManager.getTaskById(1), taskManager.getTaskById(1));
+    }
+
+    @Test
+    public void subtaskEqualsItselfById() {
+        assertEquals(taskManager.getSubtaskById(4), taskManager.getSubtaskById(4));
+    }
+
+    @Test
+    public void epicEqualsItselfById() {
+        assertEquals(taskManager.getEpicById(3), taskManager.getEpicById(3));
+    }
+
+    @Test
+    public void epicCannotBeInsideItself() {
+        Epic epic = taskManager.getEpicById(3);
+        taskManager.addSubtask(epic.getName(), epic.getDescription(), 3);
+        Subtask subtask = taskManager.getSubtaskById(8);
+        subtask.setEpicId(3);
+        Assertions.assertNotEquals(epic, subtask);
+    }
 }

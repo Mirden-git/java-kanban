@@ -6,8 +6,7 @@ import task.TaskType;
 public class Main {
 
     public static void main(String[] args) {
-        Managers managers = new Managers();
-        TaskManager taskManager = managers.getDefault();
+        TaskManager taskManager = Managers.getDefault();
 
         taskManager.addTask("Обычная задача 1", "Описание 1");
         taskManager.addTask("Обычная задача 2", "Описание 2");
