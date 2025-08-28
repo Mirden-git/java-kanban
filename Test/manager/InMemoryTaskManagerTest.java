@@ -4,10 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import task.Epic;
-import task.Subtask;
-import task.Task;
-import task.TaskType;
+import task.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +113,18 @@ class InMemoryTaskManagerTest {
         Task task = taskManager.getTasks().get(0);
         assertEquals("Обычная задача 1", task.getName());
         assertEquals("Описание 1", task.getDescription());
+    }
+
+    @Test
+    void historyKeepsOldVersionOfTask() {
+        taskManager.addTask("A", "B");
+        int id = taskManager.getTasks().get(0).getId();
+        Task task = taskManager.getTaskById(id);
+        taskManager.getHistoryManager().addToHistory(task);
+        taskManager.changeTaskStatus(id, TaskStatus.DONE);
+        List<Task> history = taskManager.getHistoryManager().getHistory();
+        Task fromHistory = history.get(0);
+        assertEquals(TaskStatus.NEW, fromHistory.getStatus());
     }
 
     @Test
