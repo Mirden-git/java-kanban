@@ -19,6 +19,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     public final HistoryManager historyManager;
 
+    public int getIdCount() {
+        return idCount;
+    }
+
+    public int nextId() {
+        do {
+            idCount++;
+        } while (tasks.containsKey(idCount) || subtasks.containsKey(idCount) || epics.containsKey(idCount));
+        return idCount;
+    }
+
     public InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
     }
@@ -71,27 +82,56 @@ public class InMemoryTaskManager implements TaskManager {
         return epics.get(id);
     }
 
+//    @Override
+//    public void addTask(String name, String description) {
+//        idCount++;
+//        Task task = new Task(idCount, name, description);
+//        tasks.put(idCount, task);
+//    }
+
     @Override
     public void addTask(String name, String description) {
-        idCount++;
-        Task task = new Task(idCount, name, description);
-        tasks.put(idCount, task);
+        addTask(new Task(0, name, description));
+    }
+
+    @Override
+    public void addTask(Task task) {
+        int id = nextId();
+        Task toStore = new Task(id, task.getName(), task.getDescription());
+        tasks.put(id, toStore);
     }
 
     @Override
     public void addSubtask(String name, String description, int epicId) {
-        idCount++;
-        Subtask subtask = new Subtask(idCount, name, description, epicId);
-        subtasks.put(idCount, subtask);
-        Epic tempEpic = epics.get(epicId);
-        tempEpic.addSubtaskId(idCount);
+        addSubtask(new Subtask(0, name, description, epicId));
+    }
+
+    @Override
+    public void addSubtask(Subtask subtask) {
+        int id = nextId();
+        Subtask toStore = new Subtask(id, subtask.getName(), subtask.getDescription(), subtask.getEpicId());
+        subtasks.put(id, toStore);
+
+        Epic tempEpic = epics.get(subtask.getEpicId());
+
+        if (tempEpic != null) {
+            tempEpic.addSubtaskId(id);
+            changeEpicStatus(tempEpic.getId());
+        } else {
+            System.out.println("Эпик с id=" + subtask.getEpicId() + " не найден");
+        }
     }
 
     @Override
     public void addEpic(String name, String description) {
-        idCount++;
-        Epic epic = new Epic(idCount, name, description);
-        epics.put(idCount, epic);
+        addEpic(new Epic(0, name, description));
+    }
+
+    @Override
+    public void addEpic(Epic epic) {
+        int id = nextId();
+        Epic toStore = new Epic(id, epic.getName(), epic.getDescription());
+        epics.put(id, toStore);
     }
 
     @Override

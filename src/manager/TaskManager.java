@@ -22,9 +22,15 @@ public interface TaskManager {
 
     void addTask(String name, String description);
 
+    void addTask(Task task);
+
     void addSubtask(String name, String description, int epicId);
 
+    void addSubtask(Subtask subtask);
+
     void addEpic(String name, String description);
+
+    void addEpic(Epic epic);
 
     void updateTask(Task task);
 
