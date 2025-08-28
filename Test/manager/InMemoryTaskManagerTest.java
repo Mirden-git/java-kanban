@@ -1,15 +1,11 @@
 package manager;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,14 +16,6 @@ class InMemoryTaskManagerTest {
     @BeforeAll
     public static void beforeAll() {
         taskManager = Managers.getDefault();
-
-//        taskManager.addTask("Обычная задача 1", "Описание 1"); // id 1
-//        taskManager.addTask("Обычная задача 2", "Описание 2"); // id 2
-//        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 3
-//        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 3); // id 4
-//        taskManager.addSubtask("Подзадача 2", "Описание подзадачи 2", 3); // id 5
-//        taskManager.addEpic("Эпик 2", "Описание эпика 2"); // id 6
-//        taskManager.addSubtask("Подзадача 3", "Описание подзадачи 3", 6); // id 7
     }
 
     @AfterEach
@@ -63,7 +51,7 @@ class InMemoryTaskManagerTest {
     public void epicCannotBeInsideItself() {
         taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 1
         Epic epic = taskManager.getEpics().get(0);
-        Subtask tempSubtask = new Subtask(epic.getId(), "Подзадача", "Описание подзадачи", epic.getId());
+        Subtask tempSubtask = new Subtask(epic.getId(), "Подзадача", "Описание", epic.getId());
         taskManager.addSubtask(tempSubtask); // id 2
         Subtask subtask = taskManager.getSubtasks().get(0);
         assertNotEquals(epic.getId(), subtask.getId());
@@ -101,9 +89,11 @@ class InMemoryTaskManagerTest {
     @Test
     public void generatedIdDoesNotConflictWithSettedId() {
         taskManager.addTask("Обычная задача 1", "Описание 1");
-        Task firstTask = new Task(1, "Задача с заданным id", "заданный id = 1");
+        List<Task> tasks = taskManager.getTasks();
+        int taskId = tasks.get(0).getId();
+        Task firstTask = new Task(taskId, "Задача с заданным id", "заданный id = 1");
         taskManager.addTask(firstTask);
-        assertTrue(taskManager.getTasks().size() == 2);
+        assertEquals(2, taskManager.getTasks().size());
     }
 
     @Test
@@ -116,22 +106,11 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void historyKeepsOldVersionOfTask() {
-        taskManager.addTask("A", "B");
-        int id = taskManager.getTasks().get(0).getId();
-        Task task = taskManager.getTaskById(id);
-        taskManager.getHistoryManager().addToHistory(task);
-        taskManager.changeTaskStatus(id, TaskStatus.DONE);
-        List<Task> history = taskManager.getHistoryManager().getHistory();
-        Task fromHistory = history.get(0);
-        assertEquals(TaskStatus.NEW, fromHistory.getStatus());
-    }
-
-    @Test
-    public void getEpicSubtasksId() {
-    }
-
-    @Test
-    public void addSubtaskId() {
+    public void possibilityToGetEpicSubtasksId() {
+        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        List<Epic> epics = taskManager.getEpics();
+        int epicId = epics.get(0).getId();
+        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", epicId);
+        assertNotNull(epics.get(0).getEpicSubtasksId());
     }
 }

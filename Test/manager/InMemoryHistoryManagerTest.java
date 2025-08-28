@@ -2,8 +2,12 @@ package manager;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import task.Task;
+import task.TaskStatus;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class InMemoryHistoryManagerTest {
 
@@ -12,17 +16,18 @@ class InMemoryHistoryManagerTest {
     @BeforeAll
     public static void beforeAll() {
         taskManager = Managers.getDefault();
-
-//        taskManager.addTask("Обычная задача 1", "Описание 1"); // id 1
-//        taskManager.addTask("Обычная задача 2", "Описание 2"); // id 2
-        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 3
-        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 3); // id 4
-        taskManager.addSubtask("Подзадача 2", "Описание подзадачи 2", 3); // id 5
-        taskManager.addEpic("Эпик 2", "Описание эпика 2"); // id 6
-        taskManager.addSubtask("Подзадача 3", "Описание подзадачи 3", 6); // id 7
     }
 
     @Test
-    public void tasksAddedToHistoryAreUnchanged() {}
+    public void tasksAddedToHistoryAreUnchanged() {
+        taskManager.addTask("A", "B");
+        int id = taskManager.getTasks().get(0).getId();
+        Task task = taskManager.getTaskById(id);
+        taskManager.getHistoryManager().addToHistory(task);
+        taskManager.changeTaskStatus(id, TaskStatus.DONE);
+        List<Task> history = taskManager.getHistoryManager().getHistory();
+        Task fromHistory = history.get(0);
+        assertEquals(TaskStatus.NEW, fromHistory.getStatus());
+    }
 
 }

@@ -14,14 +14,18 @@ class SubtaskTest {
     @BeforeAll
     public static void beforeAll() {
         taskManager = Managers.getDefault();
+    }
 
-//        taskManager.addTask("Обычная задача 1", "Описание 1"); // id 1
-//        taskManager.addTask("Обычная задача 2", "Описание 2"); // id 2
-//        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 3
-//        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 3); // id 4
-//        taskManager.addSubtask("Подзадача 2", "Описание подзадачи 2", 3); // id 5
-//        taskManager.addEpic("Эпик 2", "Описание эпика 2"); // id 6
-//        taskManager.addSubtask("Подзадача 3", "Описание подзадачи 3", 6); // id 7
+    @Test
+    public void possibilityToChangeEpicIdOfSubtask() {
+        taskManager.addEpic("A", "B");
+        int id = taskManager.getEpics().get(0).getId();
+        Epic epic = taskManager.getEpicById(id);
+        taskManager.addSubtask("Подзадача","Описание", id);
+        int newId = taskManager.nextId();
+        Subtask lastAddedSubtask = taskManager.getSubtasks().getLast();
+        lastAddedSubtask.setEpicId(newId);
+        assertNotEquals(id, lastAddedSubtask.getEpicId());
     }
 
 

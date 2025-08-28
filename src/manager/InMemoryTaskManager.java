@@ -19,19 +19,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     public final HistoryManager historyManager;
 
+    public InMemoryTaskManager() {
+        this.historyManager = Managers.getDefaultHistory();
+    }
+
+    @Override
     public int getIdCount() {
         return idCount;
     }
 
+    @Override
     public int nextId() {
         do {
             idCount++;
         } while (tasks.containsKey(idCount) || subtasks.containsKey(idCount) || epics.containsKey(idCount));
         return idCount;
-    }
-
-    public InMemoryTaskManager() {
-        this.historyManager = Managers.getDefaultHistory();
     }
 
     @Override
@@ -56,6 +58,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearListOf(TaskType taskType) {
+
         switch (taskType) {
             case TaskType.TASK -> tasks.clear();
             case TaskType.SUBTASK -> subtasks.clear();
@@ -81,13 +84,6 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.addToHistory(epics.get(id));
         return epics.get(id);
     }
-
-//    @Override
-//    public void addTask(String name, String description) {
-//        idCount++;
-//        Task task = new Task(idCount, name, description);
-//        tasks.put(idCount, task);
-//    }
 
     @Override
     public void addTask(String name, String description) {

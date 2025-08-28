@@ -8,8 +8,8 @@ public class Main {
     public static void main(String[] args) {
         TaskManager taskManager = Managers.getDefault();
 
-//        taskManager.addTask("Обычная задача 1", "Описание 1");
-//        taskManager.addTask("Обычная задача 2", "Описание 2");
+        taskManager.addTask("Обычная задача 1", "Описание 1");
+        taskManager.addTask("Обычная задача 2", "Описание 2");
         taskManager.addEpic("Эпик 1", "Описание эпика 1");
         taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 3);
         taskManager.addSubtask("Подзадача 2", "Описание подзадачи 2", 3);

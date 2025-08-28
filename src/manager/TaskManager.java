@@ -12,6 +12,10 @@ public interface TaskManager {
 
     List<Epic> getEpics();
 
+    int getIdCount();
+
+    int nextId();
+
     void clearListOf(TaskType taskType);
 
     Task getTaskById(int id);
