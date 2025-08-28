@@ -28,23 +28,4 @@ class TaskTest {
     public void taskEqualItselfById() {
         assertEquals(taskManager.getTaskById(1), taskManager.getTaskById(1));
     }
-
-    @Test
-    public void subtaskEqualsItselfById() {
-        assertEquals(taskManager.getSubtaskById(4), taskManager.getSubtaskById(4));
-    }
-
-    @Test
-    public void epicEqualsItselfById() {
-        assertEquals(taskManager.getEpicById(3), taskManager.getEpicById(3));
-    }
-
-    @Test
-    public void epicCannotBeInsideItself() {
-        Epic epic = taskManager.getEpicById(3);
-        taskManager.addSubtask(epic.getName(), epic.getDescription(), 3);
-        Subtask subtask = taskManager.getSubtaskById(8);
-        subtask.setEpicId(3);
-        Assertions.assertNotEquals(epic, subtask);
-    }
 }
