@@ -9,9 +9,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InMemoryTaskManagerTest {
+public class InMemoryTaskManagerTest {
 
-    public static TaskManager taskManager;
+    private static TaskManager taskManager;
 
     @BeforeAll
     public static void beforeAll() {
@@ -20,9 +20,9 @@ class InMemoryTaskManagerTest {
 
     @AfterEach
     public void afterEach() {
-        taskManager.clearListOf(TaskType.TASK);
-        taskManager.clearListOf(TaskType.SUBTASK);
-        taskManager.clearListOf(TaskType.EPIC);
+        taskManager.clearListOfTasks();
+        taskManager.clearListOfSubtasks();
+        taskManager.clearListOfSubtasks();
     }
 
     @Test
@@ -49,20 +49,21 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void epicCannotBeInsideItself() {
-        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 1
-        Epic epic = taskManager.getEpics().get(0);
+        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        Epic epic = taskManager.getEpics().getLast();
         Subtask tempSubtask = new Subtask(epic.getId(), "Подзадача", "Описание", epic.getId());
-        taskManager.addSubtask(tempSubtask); // id 2
-        Subtask subtask = taskManager.getSubtasks().get(0);
+        taskManager.addSubtask(tempSubtask);
+        Subtask subtask = taskManager.getSubtasks().getLast();
         assertNotEquals(epic.getId(), subtask.getId());
     }
 
     @Test
     public void subtaskCannotBeEpicForItself() {
-        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 1
-        Subtask tempSubtask = new Subtask(1, "A", "B", 1);
+        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        int epicId = taskManager.getEpics().getLast().getId();
+        Subtask tempSubtask = new Subtask(epicId, "A", "B", epicId);
         taskManager.addSubtask(tempSubtask);
-        Subtask subtask = taskManager.getSubtasks().get(0);
+        Subtask subtask = taskManager.getSubtasks().getLast();
         assertNotEquals(subtask.getId(), subtask.getEpicId());
     }
     @Test
@@ -73,9 +74,9 @@ class InMemoryTaskManagerTest {
         List<Task> tasks = taskManager.getTasks();
         List<Subtask> subtasks = taskManager.getSubtasks();
         List<Epic> epics = taskManager.getEpics();
-        int taskId = tasks.get(0).getId();
-        int subtaskId = subtasks.get(0).getId();
-        int epicId = epics.get(0).getId();
+        int taskId = tasks.getLast().getId();
+        int subtaskId = subtasks.getLast().getId();
+        int epicId = epics.getLast().getId();
 
         assertNotNull(tasks);
         assertNotNull(subtasks);
@@ -90,7 +91,7 @@ class InMemoryTaskManagerTest {
     public void generatedIdDoesNotConflictWithSettedId() {
         taskManager.addTask("Обычная задача 1", "Описание 1");
         List<Task> tasks = taskManager.getTasks();
-        int taskId = tasks.get(0).getId();
+        int taskId = tasks.getLast().getId();
         Task firstTask = new Task(taskId, "Задача с заданным id", "заданный id = 1");
         taskManager.addTask(firstTask);
         assertEquals(2, taskManager.getTasks().size());
@@ -100,7 +101,7 @@ class InMemoryTaskManagerTest {
     public void fieldsOfTasksUnchangedAfterAddingToManager() {
         Task newTask = new Task(1, "Обычная задача 1", "Описание 1");
         taskManager.addTask(newTask);
-        Task task = taskManager.getTasks().get(0);
+        Task task = taskManager.getTasks().getLast();
         assertEquals("Обычная задача 1", task.getName());
         assertEquals("Описание 1", task.getDescription());
     }
@@ -109,8 +110,8 @@ class InMemoryTaskManagerTest {
     public void possibilityToGetEpicSubtasksId() {
         taskManager.addEpic("Эпик 1", "Описание эпика 1");
         List<Epic> epics = taskManager.getEpics();
-        int epicId = epics.get(0).getId();
+        int epicId = epics.getLast().getId();
         taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", epicId);
-        assertNotNull(epics.get(0).getEpicSubtasksId());
+        assertNotNull(epics.getLast().getEpicSubtasksId());
     }
 }

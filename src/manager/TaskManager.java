@@ -2,7 +2,6 @@ package manager;
 
 import task.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -16,7 +15,11 @@ public interface TaskManager {
 
     int nextId();
 
-    void clearListOf(TaskType taskType);
+    void clearListOfTasks();
+
+    void clearListOfSubtasks();
+
+    void clearListOfEpics();
 
     Task getTaskById(int id);
 
@@ -48,7 +51,7 @@ public interface TaskManager {
 
     void deleteEpic(int id);
 
-    ArrayList<Subtask> getListOfEpicSubtasks(int id);
+    List<Subtask> getListOfEpicSubtasks(int id);
 
     void changeTaskStatus(int id, TaskStatus newStatus);
 
@@ -56,5 +59,5 @@ public interface TaskManager {
 
     void changeEpicStatus(int id);
 
-    HistoryManager getHistoryManager();
+    List<Task> getHistory();
 }

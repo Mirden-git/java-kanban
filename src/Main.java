@@ -1,7 +1,6 @@
 import manager.TaskManager;
 import manager.Managers;
 import task.TaskStatus;
-import task.TaskType;
 
 public class Main {
 
@@ -36,14 +35,14 @@ public class Main {
         taskManager.getTaskById(1);
         taskManager.getSubtaskById(4);
         taskManager.getEpicById(3);
-        System.out.println(taskManager.getHistoryManager().getHistory());
+        System.out.println(taskManager.getHistory());
         System.out.println();
 
         taskManager.changeTaskStatus(1, TaskStatus.IN_PROGRESS);
         taskManager.changeTaskStatus(2, TaskStatus.DONE);
         System.out.println(taskManager.getTasks());
         System.out.println();
-        taskManager.clearListOf(TaskType.EPIC);
+        taskManager.clearListOfEpics();
 
         taskManager.changeSubtaskStatus(4, TaskStatus.DONE);
         taskManager.changeSubtaskStatus(5, TaskStatus.IN_PROGRESS);
@@ -65,8 +64,8 @@ public class Main {
         System.out.println(taskManager.getEpics());
         System.out.println();
 
-        taskManager.clearListOf(TaskType.TASK);
-        taskManager.clearListOf(TaskType.EPIC);
-        taskManager.clearListOf(TaskType.SUBTASK);
+        taskManager.clearListOfTasks();
+        taskManager.clearListOfSubtasks();
+        taskManager.clearListOfEpics();
     }
 }

@@ -9,9 +9,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EpicTest {
+public class EpicTest {
 
-    public static TaskManager taskManager;
+    private static TaskManager taskManager;
 
     @BeforeAll
     public static void beforeAll() {
@@ -25,5 +25,4 @@ class EpicTest {
         epics.get(0).addSubtaskId(taskManager.nextId());
         assertEquals(1, epics.get(0).getEpicSubtasksId().size());
     }
-
 }

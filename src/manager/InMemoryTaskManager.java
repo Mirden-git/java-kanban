@@ -4,7 +4,6 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 import task.TaskStatus;
-import task.TaskType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,15 +29,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int nextId() {
+
         do {
             idCount++;
         } while (tasks.containsKey(idCount) || subtasks.containsKey(idCount) || epics.containsKey(idCount));
+
         return idCount;
     }
 
     @Override
-    public HistoryManager getHistoryManager() {
-        return historyManager;
+    public List<Task> getHistory() {
+        return historyManager.getHistoryList();
     }
 
     @Override
@@ -57,14 +58,18 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void clearListOf(TaskType taskType) {
+    public void clearListOfTasks() {
+        tasks.clear();
+    }
 
-        switch (taskType) {
-            case TaskType.TASK -> tasks.clear();
-            case TaskType.SUBTASK -> subtasks.clear();
-            case TaskType.EPIC -> epics.clear();
-            default -> System.out.println("Ошибка, нет такого типа задач");
-        }
+    @Override
+    public void clearListOfSubtasks() {
+        subtasks.clear();
+    }
+
+    @Override
+    public void clearListOfEpics() {
+        epics.clear();
     }
 
     @Override

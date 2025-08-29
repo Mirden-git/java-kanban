@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SubtaskTest {
+public class SubtaskTest {
 
     public static TaskManager taskManager;
 
@@ -27,6 +27,4 @@ class SubtaskTest {
         lastAddedSubtask.setEpicId(newId);
         assertNotEquals(id, lastAddedSubtask.getEpicId());
     }
-
-
 }

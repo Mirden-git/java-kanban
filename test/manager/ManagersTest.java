@@ -6,10 +6,10 @@ import task.Task;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ManagersTest {
+public class ManagersTest {
 
-    public static TaskManager taskManager;
-    public static HistoryManager history;
+    private static TaskManager taskManager;
+    private static HistoryManager history;
 
     @BeforeAll
     public static void beforeAll() {
@@ -18,18 +18,18 @@ class ManagersTest {
     }
 
     @Test
-    void getDefaultTaskManagerReturnsWorkingInstance() {
+    public void getDefaultTaskManagerReturnsWorkingInstance() {
         assertNotNull(taskManager);
         taskManager.addTask("A", "B");
         assertEquals(1, taskManager.getTasks().size());
     }
 
     @Test
-    void getDefaultHistoryManagerReturnsWorkingInstance() {
+    public void getDefaultHistoryManagerReturnsWorkingInstance() {
         assertNotNull(history);
         Task task = new Task(1, "A", "B");
         history.addToHistory(task);
-        assertEquals(1, history.getHistory().size());
+        assertEquals(1, history.getHistoryList().size());
     }
 
 }
