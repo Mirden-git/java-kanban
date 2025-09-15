@@ -4,12 +4,14 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int MAX_TASKS_IN_HISTORY = 10;
-    private final List<Task> historyList = new ArrayList<>(MAX_TASKS_IN_HISTORY);
+    //private static final int MAX_TASKS_IN_HISTORY = 10;
+    private final List<Task> historyList = new ArrayList<>();
+    private final Map<Integer, Node> listForDeletion = new HashMap<>();
+
+
 
     @Override
     public void addToHistory(Task task) {
@@ -21,6 +23,8 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task instanceof Epic epic) {
             copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
             copyOfAnyTask.setStatus(epic.getStatus());
+            List<Integer> epicSubtasksIdList = ((Epic) copyOfAnyTask).getEpicSubtasksId();
+            epicSubtasksIdList = List.copyOf(epic.getEpicSubtasksId());
         } else if (task instanceof Subtask subtask) {
             copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
                     subtask.getEpicId());
@@ -30,11 +34,23 @@ public class InMemoryHistoryManager implements HistoryManager {
             copyOfAnyTask.setStatus(task.getStatus());
         }
 
-        if (historyList.size() >= MAX_TASKS_IN_HISTORY) {
-            historyList.removeFirst();
-        }
+//        if (historyList.size() >= MAX_TASKS_IN_HISTORY) {
+//            historyList.removeFirst();
+//        }
 
         historyList.add(copyOfAnyTask);
+    }
+
+    @Override
+    public void remove(int id) {
+        historyList.remove(id - 1);
+    }
+
+    @Override
+    public void remove(Set<Integer> allID) {
+        for (int id : allID) {
+            historyList.remove(id - 1);
+        }
     }
 
     @Override

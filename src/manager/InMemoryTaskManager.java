@@ -5,10 +5,7 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
@@ -59,17 +56,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearListOfTasks() {
+        Set<Integer> allIdOfTasks = tasks.keySet();
+        historyManager.remove(allIdOfTasks);
         tasks.clear();
+        // todo: добавить очистку истории для таких методов???
     }
 
     @Override
     public void clearListOfSubtasks() {
+        Set<Integer> allIdOfTasks = subtasks.keySet();
+        historyManager.remove(allIdOfTasks);
         subtasks.clear();
     }
 
     @Override
     public void clearListOfEpics() {
+        Set<Integer> allIdOfTasks = epics.keySet();
+        historyManager.remove(allIdOfTasks);
         epics.clear();
+        clearListOfSubtasks();
     }
 
     @Override
@@ -100,6 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = nextId();
         Task toStore = new Task(id, task.getName(), task.getDescription());
         tasks.put(id, toStore);
+        historyManager.addToHistory(tasks.get(id));
     }
 
     @Override
@@ -121,6 +127,8 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             System.out.println("Эпик с id=" + subtask.getEpicId() + " не найден");
         }
+
+        historyManager.addToHistory(subtasks.get(id));
     }
 
     @Override
@@ -133,6 +141,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = nextId();
         Epic toStore = new Epic(id, epic.getName(), epic.getDescription());
         epics.put(id, toStore);
+        historyManager.addToHistory(epics.get(id));
     }
 
     @Override
@@ -165,30 +174,53 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         tasks.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
     public void deleteSubtask(int id) {
         Subtask tempSubtask = subtasks.get(id);
+
+        if (tempSubtask == null) {
+            return;
+        }
+
         int epicId = tempSubtask.getEpicId();
+        Epic epic = epics.get(epicId);
+        subtasks.remove(id);
+        historyManager.remove(id);
 
-        if (epics.get(epicId) != null) {
-            List<Integer> tempArray = epics.get(epicId).getEpicSubtasksId();
-            int idForDeletion = -1;
+        if (epic != null) {
+            List<Integer> idList = epic.getEpicSubtasksId();
+            boolean isSubtaskRemoved = idList.remove((Integer) id);
 
-            for (int i : tempArray) {
-                if (i == id) {
-                    idForDeletion = tempArray.indexOf(i);
-                    break;
+            if (isSubtaskRemoved) {
+                if (idList.isEmpty()) {
+                    deleteEpic(epicId);
+                    historyManager.remove(epicId);
+                } else {
+                    changeEpicStatus(epicId);
                 }
-            }
-
-            if (idForDeletion >= 0) {
-                tempArray.remove(idForDeletion);
             }
         }
 
-        subtasks.remove(id);
+
+//        if (epics.get(epicId) != null) {
+//            List<Integer> tempArray = epics.get(epicId).getEpicSubtasksId();
+//            int idForDeletion = -1;
+//
+//            for (int i : tempArray) {
+//                if (i == id) {
+//                    idForDeletion = tempArray.indexOf(i);
+//                    break;
+//                }
+//            }
+//
+//            if (idForDeletion >= 0) {
+//                tempArray.remove(idForDeletion);
+//            }
+//        }
+
     }
 
     @Override
@@ -199,9 +231,11 @@ public class InMemoryTaskManager implements TaskManager {
 
             for (int idItem : idList) {
                 subtasks.remove(idItem);
+                historyManager.remove(idItem);
             }
 
             epics.remove(id);
+            historyManager.remove(id);
         }
     }
 
