@@ -7,12 +7,9 @@ import task.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    //private static final int MAX_TASKS_IN_HISTORY = 10;
-    //private final List<Task> historyList = new ArrayList<>();
     private final Map<Integer, Node> historyList = new HashMap<>();
     private Node head;
     private Node tail;
-
 
 
     @Override
@@ -20,28 +17,25 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (task == null) return;
 
-        Node copyOfAnyTask = new Node(task);
-        linkLast(copyOfAnyTask);
-        historyList.put(task.getId(), copyOfAnyTask);
+        Node nodeForHistory = new Node(task);
 
-//        if (task instanceof Epic epic) {
-//            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
-//            copyOfAnyTask.setStatus(epic.getStatus());
-//            List<Integer> epicSubtasksIdList = ((Epic) copyOfAnyTask).getEpicSubtasksId();
-//            epicSubtasksIdList = List.copyOf(epic.getEpicSubtasksId());
-//        } else if (task instanceof Subtask subtask) {
-//            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
-//                    subtask.getEpicId());
-//            copyOfAnyTask.setStatus(subtask.getStatus());
-//        } else {
-//            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
-//            copyOfAnyTask.setStatus(task.getStatus());
-//        }
+        if (historyList.isEmpty()) {
+            head = nodeForHistory;
+            tail = nodeForHistory;
+            historyList.put(task.getId(), nodeForHistory);
+        } else {
 
-//        if (historyList.size() >= MAX_TASKS_IN_HISTORY) {
-//            historyList.removeFirst();
-//        }
+            if (historyList.containsValue(nodeForHistory) && historyList.size() > 1) {
+                removeNode(nodeForHistory);
+                remove(task.getId()); //todo а надо ли?
+            } else {
+                linkLast(nodeForHistory);
+            }
 
+            historyList.put(task.getId(), nodeForHistory);
+            tail = nodeForHistory;
+
+        }
     }
 
     @Override
@@ -58,10 +52,32 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistoryList() {
-        return historyList;
+        return getTasks();
     }
 
+    @Override
     public void linkLast(Node node) {
-        
+        tail.setNext(node);
+        node.setPrev(tail);
     }
+
+    @Override
+    public List<Task> getTasks() {
+        List<Task> history = new ArrayList<>();
+        history.add(head.getTask());
+        Node currentNode = head;
+
+        while (currentNode != null) {
+            history.add(currentNode.getTask());
+            currentNode = currentNode.getNext();
+        }
+
+        return history;
+    }
+
+    @Override
+    public void removeNode(Node node) {
+        node.getPrev().setNext(node.getNext());
+    }
+
 }

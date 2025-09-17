@@ -15,4 +15,10 @@ public interface HistoryManager {
 
     List<Task> getHistoryList();
 
+    void linkLast(Node node);
+
+    List<Task> getTasks();
+
+    void removeNode(Node node);
+
 }
