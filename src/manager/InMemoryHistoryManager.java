@@ -8,8 +8,10 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
     //private static final int MAX_TASKS_IN_HISTORY = 10;
-    private final List<Task> historyList = new ArrayList<>();
-    private final Map<Integer, Node> listForDeletion = new HashMap<>();
+    //private final List<Task> historyList = new ArrayList<>();
+    private final Map<Integer, Node> historyList = new HashMap<>();
+    private Node head;
+    private Node tail;
 
 
 
@@ -18,27 +20,28 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (task == null) return;
 
-        Task copyOfAnyTask;
+        Node copyOfAnyTask = new Node(task);
+        linkLast(copyOfAnyTask);
+        historyList.put(task.getId(), copyOfAnyTask);
 
-        if (task instanceof Epic epic) {
-            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
-            copyOfAnyTask.setStatus(epic.getStatus());
-            List<Integer> epicSubtasksIdList = ((Epic) copyOfAnyTask).getEpicSubtasksId();
-            epicSubtasksIdList = List.copyOf(epic.getEpicSubtasksId());
-        } else if (task instanceof Subtask subtask) {
-            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
-                    subtask.getEpicId());
-            copyOfAnyTask.setStatus(subtask.getStatus());
-        } else {
-            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
-            copyOfAnyTask.setStatus(task.getStatus());
-        }
+//        if (task instanceof Epic epic) {
+//            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
+//            copyOfAnyTask.setStatus(epic.getStatus());
+//            List<Integer> epicSubtasksIdList = ((Epic) copyOfAnyTask).getEpicSubtasksId();
+//            epicSubtasksIdList = List.copyOf(epic.getEpicSubtasksId());
+//        } else if (task instanceof Subtask subtask) {
+//            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
+//                    subtask.getEpicId());
+//            copyOfAnyTask.setStatus(subtask.getStatus());
+//        } else {
+//            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
+//            copyOfAnyTask.setStatus(task.getStatus());
+//        }
 
 //        if (historyList.size() >= MAX_TASKS_IN_HISTORY) {
 //            historyList.removeFirst();
 //        }
 
-        historyList.add(copyOfAnyTask);
     }
 
     @Override
@@ -56,5 +59,9 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistoryList() {
         return historyList;
+    }
+
+    public void linkLast(Node node) {
+        
     }
 }
