@@ -1,7 +1,5 @@
 package manager;
 
-import task.Epic;
-import task.Subtask;
 import task.Task;
 
 import java.util.*;
@@ -18,21 +16,21 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) return;
 
         Node nodeForHistory = new Node(task);
+        int taskId = task.getId();
 
         if (historyList.isEmpty()) {
             head = nodeForHistory;
             tail = nodeForHistory;
-            historyList.put(task.getId(), nodeForHistory);
+            historyList.put(taskId, nodeForHistory);
         } else {
 
-            if (historyList.containsValue(nodeForHistory) && historyList.size() > 1) {
-                removeNode(nodeForHistory);
-                remove(task.getId()); //todo а надо ли?
-            } else {
+            if (historyList.containsKey(taskId) && historyList.size() > 1) {
+                removeNode(historyList.get(taskId));
+            } else if (!historyList.containsKey(taskId)) {
                 linkLast(nodeForHistory);
             }
 
-            historyList.put(task.getId(), nodeForHistory);
+            historyList.put(taskId, nodeForHistory);
             tail = nodeForHistory;
 
         }
@@ -40,13 +38,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-        historyList.remove(id - 1);
+        historyList.remove(id);
     }
 
     @Override
     public void remove(Set<Integer> allID) {
         for (int id : allID) {
-            historyList.remove(id - 1);
+            historyList.remove(id);
         }
     }
 
@@ -77,7 +75,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void removeNode(Node node) {
-        node.getPrev().setNext(node.getNext());
-    }
 
+        if (node.getPrev() != null) {
+            node.getPrev().setNext(node.getNext());
+            remove(node.getTask().getId());
+        } else {
+            node.getNext().setPrev(null);
+            head = node.getNext();
+            node.setNext(null);
+            remove(node.getTask().getId());
+        }
+    }
 }

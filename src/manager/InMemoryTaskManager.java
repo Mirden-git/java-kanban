@@ -59,7 +59,6 @@ public class InMemoryTaskManager implements TaskManager {
         Set<Integer> allIdOfTasks = tasks.keySet();
         historyManager.remove(allIdOfTasks);
         tasks.clear();
-        // todo: добавить очистку истории для таких методов???
     }
 
     @Override
