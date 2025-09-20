@@ -20,5 +20,4 @@ public interface HistoryManager {
     List<Task> getTasks();
 
     void removeNode(Node node);
-
 }

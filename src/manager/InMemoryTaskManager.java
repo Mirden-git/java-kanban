@@ -185,23 +185,24 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         int epicId = tempSubtask.getEpicId();
-        Epic epic = epics.get(epicId);
+//        Epic epic = epics.get(epicId);
         subtasks.remove(id);
         historyManager.remove(id);
+        changeEpicStatus(epicId);
 
-        if (epic != null) {
-            List<Integer> idList = epic.getEpicSubtasksId();
-            boolean isSubtaskRemoved = idList.remove((Integer) id);
-
-            if (isSubtaskRemoved) {
-                if (idList.isEmpty()) {
-                    deleteEpic(epicId);
-                    historyManager.remove(epicId);
-                } else {
-                    changeEpicStatus(epicId);
-                }
-            }
-        }
+//        if (epic != null) {
+//            List<Integer> idList = epic.getEpicSubtasksId();
+//            boolean isSubtaskRemoved = idList.remove((Integer) id);
+//
+//            if (isSubtaskRemoved) {
+//                if (idList.isEmpty()) {
+//                    deleteEpic(epicId);
+//                    historyManager.remove(epicId);
+//                } else {
+//                    changeEpicStatus(epicId);
+//                }
+//            }
+//        }
 
 
 //        if (epics.get(epicId) != null) {
