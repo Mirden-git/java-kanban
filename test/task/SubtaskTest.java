@@ -19,8 +19,7 @@ public class SubtaskTest {
     @Test
     public void possibilityToChangeEpicIdOfSubtask() {
         taskManager.addEpic("A", "B");
-        int id = taskManager.getEpics().get(0).getId();
-        Epic epic = taskManager.getEpicById(id);
+        int id = taskManager.getEpics().getFirst().getId();
         taskManager.addSubtask("Подзадача","Описание", id);
         int newId = taskManager.nextId();
         Subtask lastAddedSubtask = taskManager.getSubtasks().getLast();

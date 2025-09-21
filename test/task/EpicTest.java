@@ -22,7 +22,7 @@ public class EpicTest {
     public void possibilityToAddSubtaskId() {
         taskManager.addEpic("Эпик 1", "Описание эпика 1");
         List<Epic> epics = taskManager.getEpics();
-        epics.get(0).addSubtaskId(taskManager.nextId());
-        assertEquals(1, epics.get(0).getEpicSubtasksId().size());
+        epics.getFirst().addSubtaskId(taskManager.nextId());
+        assertEquals(1, epics.getFirst().getEpicSubtasksId().size());
     }
 }

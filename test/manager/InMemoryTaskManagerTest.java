@@ -22,7 +22,7 @@ public class InMemoryTaskManagerTest {
     public void afterEach() {
         taskManager.clearListOfTasks();
         taskManager.clearListOfSubtasks();
-        taskManager.clearListOfSubtasks();
+        taskManager.clearListOfEpics();
     }
 
     @Test
@@ -68,15 +68,15 @@ public class InMemoryTaskManagerTest {
     }
     @Test
     public void differentTaskTypesMayBeAddedAndFoundById() {
-        taskManager.addTask("Обычная задача 2", "Описание 2"); // id 1
-        taskManager.addEpic("Эпик 1", "Описание эпика 1"); // id 2
-        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", 2); // id 3
+        taskManager.addTask("Обычная задача 2", "Описание 2");
+        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        List<Epic> epics = taskManager.getEpics();
+        int epicId = epics.getLast().getId();
+        taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", epicId);
         List<Task> tasks = taskManager.getTasks();
         List<Subtask> subtasks = taskManager.getSubtasks();
-        List<Epic> epics = taskManager.getEpics();
         int taskId = tasks.getLast().getId();
         int subtaskId = subtasks.getLast().getId();
-        int epicId = epics.getLast().getId();
 
         assertNotNull(tasks);
         assertNotNull(subtasks);
@@ -113,5 +113,19 @@ public class InMemoryTaskManagerTest {
         int epicId = epics.getLast().getId();
         taskManager.addSubtask("Подзадача 1", "Описание подзадачи 1", epicId);
         assertNotNull(epics.getLast().getEpicSubtasksId());
+    }
+
+    @Test
+    public void thereAreNoNotActualSubIdsInEpic() {
+        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        List<Epic> epics = taskManager.getEpics();
+        int epicId = epics.getLast().getId();
+        taskManager.addSubtask("Подзадача 1", "Описание подазадачи 1", epicId);
+        taskManager.addSubtask("Подзадача 2", "Описание подазадачи 2", epicId);
+        List<Subtask> subs = taskManager.getSubtasks();
+        int subId = subs.getFirst().getId();
+        int epicIndex = epics.indexOf(taskManager.getEpicById(epicId));
+        taskManager.deleteSubtask(subId);
+        assertFalse(epics.get(epicIndex).getEpicSubtasksId().contains(subId));
     }
 }

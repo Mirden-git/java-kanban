@@ -1,7 +1,5 @@
 package manager;
 
-import task.Epic;
-import task.Subtask;
 import task.Task;
 
 import java.util.*;
@@ -11,32 +9,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node head;
     private Node tail;
 
-
     @Override
     public void addToHistory(Task task) {
 
         if (task == null) return;
 
         int taskId = task.getId();
-
-        Task copyOfAnyTask;
-
-        if (task instanceof Epic epic) {
-            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
-            List<Integer> epicSubtasksIdList = epic.getEpicSubtasksId();
-
-            for (int id : epicSubtasksIdList) {
-                copyOfAnyTask.addSubtaskId(id);
-            }
-
-        } else if (task instanceof Subtask subtask) {
-            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
-                    subtask.getEpicId());
-        } else {
-            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
-        }
-
-        copyOfAnyTask.setStatus(task.getStatus());
+        Task copyOfAnyTask = task.copy();
         Node nodeForHistory = new Node(copyOfAnyTask);
 
         if (historyList.isEmpty()) {
@@ -48,26 +27,24 @@ public class InMemoryHistoryManager implements HistoryManager {
             if (historyList.containsKey(taskId) && historyList.size() > 1) {
                 remove(taskId);
             }
-//            else if (!historyList.containsKey(taskId)) {
-//            }
 
             linkLast(nodeForHistory);
             historyList.put(taskId, nodeForHistory);
-            //tail = nodeForHistory;
-
         }
     }
 
     @Override
     public void remove(int id) {
+
         if (historyList.containsKey(id)) {
-            removeNode(historyList.get(id));// todo ssdfsdfsdf
+            removeNode(historyList.get(id));
             historyList.remove(id);
         }
     }
 
     @Override
     public void remove(Set<Integer> allID) {
+
         for (int id : allID) {
             historyList.remove(id);
         }
@@ -88,7 +65,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getTasks() {
         List<Task> history = new ArrayList<>();
-//        history.add(head.getTask());
         Node currentNode = head;
 
         while (currentNode != null) {
