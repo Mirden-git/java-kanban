@@ -1,5 +1,7 @@
 package manager;
 
+import task.Epic;
+import task.Subtask;
 import task.Task;
 
 import java.util.*;
@@ -15,8 +17,27 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (task == null) return;
 
-        Node nodeForHistory = new Node(task);
         int taskId = task.getId();
+
+        Task copyOfAnyTask;
+
+        if (task instanceof Epic epic) {
+            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
+            List<Integer> epicSubtasksIdList = epic.getEpicSubtasksId();
+
+            for (int id : epicSubtasksIdList) {
+                copyOfAnyTask.addSubtaskId(id);
+            }
+
+        } else if (task instanceof Subtask subtask) {
+            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
+                    subtask.getEpicId());
+        } else {
+            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
+        }
+
+        copyOfAnyTask.setStatus(task.getStatus());
+        Node nodeForHistory = new Node(copyOfAnyTask);
 
         if (historyList.isEmpty()) {
             head = nodeForHistory;
