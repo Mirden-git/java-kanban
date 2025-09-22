@@ -1,44 +1,96 @@
 package manager;
 
-import task.Epic;
-import task.Subtask;
 import task.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int MAX_TASKS_IN_HISTORY = 10;
-    private final List<Task> historyList = new ArrayList<>(MAX_TASKS_IN_HISTORY);
+    private final Map<Integer, Node> historyList = new HashMap<>();
+    private Node head;
+    private Node tail;
 
     @Override
     public void addToHistory(Task task) {
 
         if (task == null) return;
 
-        Task copyOfAnyTask;
+        int taskId = task.getId();
+        Task copyOfAnyTask = task.copy();
+        Node nodeForHistory = new Node(copyOfAnyTask);
 
-        if (task instanceof Epic epic) {
-            copyOfAnyTask = new Epic(epic.getId(), epic.getName(), epic.getDescription());
-            copyOfAnyTask.setStatus(epic.getStatus());
-        } else if (task instanceof Subtask subtask) {
-            copyOfAnyTask = new Subtask(subtask.getId(), subtask.getName(), subtask.getDescription(),
-                    subtask.getEpicId());
-            copyOfAnyTask.setStatus(subtask.getStatus());
+        if (historyList.isEmpty()) {
+            head = nodeForHistory;
+            tail = nodeForHistory;
+            historyList.put(taskId, nodeForHistory);
         } else {
-            copyOfAnyTask = new Task(task.getId(), task.getName(), task.getDescription());
-            copyOfAnyTask.setStatus(task.getStatus());
-        }
 
-        if (historyList.size() >= MAX_TASKS_IN_HISTORY) {
-            historyList.removeFirst();
-        }
+            if (historyList.containsKey(taskId) && historyList.size() > 1) {
+                remove(taskId);
+            }
 
-        historyList.add(copyOfAnyTask);
+            linkLast(nodeForHistory);
+            historyList.put(taskId, nodeForHistory);
+        }
+    }
+
+    @Override
+    public void remove(int id) {
+
+        if (historyList.containsKey(id)) {
+            removeNode(historyList.get(id));
+            historyList.remove(id);
+        }
+    }
+
+    @Override
+    public void remove(Set<Integer> allID) {
+
+        for (int id : allID) {
+            historyList.remove(id);
+        }
     }
 
     @Override
     public List<Task> getHistoryList() {
-        return historyList;
+        return getTasks();
+    }
+
+    @Override
+    public void linkLast(Node node) {
+        tail.setNext(node);
+        node.setPrev(tail);
+        tail = node;
+    }
+
+    @Override
+    public List<Task> getTasks() {
+        List<Task> history = new ArrayList<>();
+        Node currentNode = head;
+
+        while (currentNode != null) {
+            history.add(currentNode.getTask());
+            currentNode = currentNode.getNext();
+        }
+
+        return history;
+    }
+
+    @Override
+    public void removeNode(Node node) {
+
+        if (node.equals(head)) {
+            node.getNext().setPrev(null);
+            head = node.getNext();
+            node.setNext(null);
+        } else if (node.equals(tail)) {
+            node.getPrev().setNext(null);
+            tail = node.getPrev();
+            node.setPrev(null);
+        } else if (node.getPrev() != null && node.getNext() != null) {
+            node.getPrev().setNext(node.getNext());
+            node.getNext().setPrev(node.getPrev());
+            node.setPrev(null);
+            node.setNext(null);
+        }
     }
 }

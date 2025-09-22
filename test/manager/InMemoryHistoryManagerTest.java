@@ -1,5 +1,6 @@
 package manager;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.Task;
@@ -20,15 +21,22 @@ public class InMemoryHistoryManagerTest {
         history = Managers.getDefaultHistory();
     }
 
+    @AfterEach
+    public void afterEach() {
+        taskManager.clearListOfTasks();
+        taskManager.clearListOfSubtasks();
+        taskManager.clearListOfEpics();
+    }
+
     @Test
     public void tasksAddedToHistoryAreUnchanged() {
         taskManager.addTask("A", "B");
-        int id = taskManager.getTasks().get(0).getId();
+        int id = taskManager.getTasks().getFirst().getId();
         Task task = taskManager.getTaskById(id);
         history.addToHistory(task);
         taskManager.changeTaskStatus(id, TaskStatus.DONE);
         List<Task> history = taskManager.getHistory();
-        Task fromHistory = history.get(0);
+        Task fromHistory = history.getFirst();
         assertEquals(TaskStatus.NEW, fromHistory.getStatus());
     }
 
