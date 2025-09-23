@@ -10,9 +10,12 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
 
     @Override
-    public void addToHistory(Task task) {
+    public void add(Task task) {
 
-        if (task == null) return;
+        if (task == null) {
+            System.out.println("Переданный объект равен null");
+            return;
+        }
 
         int taskId = task.getId();
         Task copyOfAnyTask = task.copy();
@@ -23,11 +26,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = nodeForHistory;
             historyList.put(taskId, nodeForHistory);
         } else {
-
-            if (historyList.containsKey(taskId) && historyList.size() > 1) {
-                remove(taskId);
-            }
-
+            remove(taskId);
             linkLast(nodeForHistory);
             historyList.put(taskId, nodeForHistory);
         }
@@ -35,19 +34,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int id) {
-
-        if (historyList.containsKey(id)) {
-            removeNode(historyList.get(id));
-            historyList.remove(id);
-        }
-    }
-
-    @Override
-    public void remove(Set<Integer> allID) {
-
-        for (int id : allID) {
-            historyList.remove(id);
-        }
+        removeNode(historyList.get(id));
+        historyList.remove(id);
     }
 
     @Override
@@ -55,15 +43,15 @@ public class InMemoryHistoryManager implements HistoryManager {
         return getTasks();
     }
 
-    @Override
-    public void linkLast(Node node) {
-        tail.setNext(node);
+    private void linkLast(Node node) {
+
+        if (tail != null) tail.setNext(node);
+
         node.setPrev(tail);
         tail = node;
     }
 
-    @Override
-    public List<Task> getTasks() {
+    private List<Task> getTasks() {
         List<Task> history = new ArrayList<>();
         Node currentNode = head;
 
@@ -75,22 +63,26 @@ public class InMemoryHistoryManager implements HistoryManager {
         return history;
     }
 
-    @Override
-    public void removeNode(Node node) {
+    private void removeNode(Node node) {
 
-        if (node.equals(head)) {
-            node.getNext().setPrev(null);
-            head = node.getNext();
-            node.setNext(null);
-        } else if (node.equals(tail)) {
-            node.getPrev().setNext(null);
-            tail = node.getPrev();
-            node.setPrev(null);
-        } else if (node.getPrev() != null && node.getNext() != null) {
+        if (node == null) return;
+
+        if (node.getPrev() != null) {
             node.getPrev().setNext(node.getNext());
-            node.getNext().setPrev(node.getPrev());
-            node.setPrev(null);
-            node.setNext(null);
+
+            if (node.getNext() == null) {
+                tail = node.getPrev();
+            } else {
+                node.getNext().setPrev(node.getPrev());
+            }
+        } else {
+            head = node.getNext();
+
+            if (head == null) {
+                tail = null;
+            } else {
+                head.setPrev(null);
+            }
         }
     }
 }

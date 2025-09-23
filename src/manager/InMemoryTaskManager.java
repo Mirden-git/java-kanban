@@ -57,14 +57,22 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearListOfTasks() {
         Set<Integer> allIdOfTasks = tasks.keySet();
-        historyManager.remove(allIdOfTasks);
+
+        for (int id : allIdOfTasks) {
+            historyManager.remove(id);
+        }
+
         tasks.clear();
     }
 
     @Override
     public void clearListOfSubtasks() {
         Set<Integer> allIdOfTasks = subtasks.keySet();
-        historyManager.remove(allIdOfTasks);
+
+        for (int id : allIdOfTasks) {
+            historyManager.remove(id);
+        }
+
         subtasks.clear();
 
         if (!epics.isEmpty()) {
@@ -78,7 +86,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void clearListOfEpics() {
         Set<Integer> allIdOfTasks = epics.keySet();
-        historyManager.remove(allIdOfTasks);
+
+        for (int id : allIdOfTasks) {
+            historyManager.remove(id);
+        }
+
         epics.clear();
         clearListOfSubtasks();
     }
@@ -87,7 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
 
-        if (task != null) historyManager.addToHistory(task);
+        if (task != null) historyManager.add(task);
 
         return task;
     }
@@ -96,7 +108,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         Subtask sub = subtasks.get(id);
 
-        if (sub != null) historyManager.addToHistory(sub);
+        if (sub != null) historyManager.add(sub);
 
         return sub;
     }
@@ -105,7 +117,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
 
-        if (epic != null) historyManager.addToHistory(epic);
+        if (epic != null) historyManager.add(epic);
 
         return epic;
     }
@@ -120,7 +132,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = nextId();
         Task toStore = new Task(id, task.getName(), task.getDescription());
         tasks.put(id, toStore);
-        historyManager.addToHistory(tasks.get(id));
+        historyManager.add(tasks.get(id));
     }
 
     @Override
@@ -142,7 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.put(id, toStore);
         tempEpic.addSubtaskId(id);
         changeEpicStatus(tempEpic.getId());
-        historyManager.addToHistory(subtasks.get(id));
+        historyManager.add(subtasks.get(id));
     }
 
     @Override
@@ -155,7 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
         int id = nextId();
         Epic toStore = new Epic(id, epic.getName(), epic.getDescription());
         epics.put(id, toStore);
-        historyManager.addToHistory(epics.get(id));
+        historyManager.add(epics.get(id));
     }
 
     @Override

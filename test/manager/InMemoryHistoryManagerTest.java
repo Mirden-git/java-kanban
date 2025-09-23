@@ -13,12 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class InMemoryHistoryManagerTest {
 
     private static TaskManager taskManager;
-    private static HistoryManager history;
 
     @BeforeAll
     public static void beforeAll() {
         taskManager = Managers.getDefault();
-        history = Managers.getDefaultHistory();
     }
 
     @AfterEach
@@ -32,8 +30,6 @@ public class InMemoryHistoryManagerTest {
     public void tasksAddedToHistoryAreUnchanged() {
         taskManager.addTask("A", "B");
         int id = taskManager.getTasks().getFirst().getId();
-        Task task = taskManager.getTaskById(id);
-        history.addToHistory(task);
         taskManager.changeTaskStatus(id, TaskStatus.DONE);
         List<Task> history = taskManager.getHistory();
         Task fromHistory = history.getFirst();
