@@ -28,7 +28,7 @@ public class ManagersTest {
     public void getDefaultHistoryManagerReturnsWorkingInstance() {
         assertNotNull(history);
         Task task = new Task(1, "A", "B");
-        history.addToHistory(task);
+        history.add(task);
         assertEquals(1, history.getHistoryList().size());
     }
 

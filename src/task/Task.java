@@ -42,9 +42,15 @@ public class Task {
         this.status = status;
     }
 
+    public Task copy() {
+        Task copy = new Task(id, name, description);
+        copy.setStatus(getStatus());
+        return copy;
+    }
+
     @Override
     public String toString() {
-        return "Task{" +
+        return "\nTask{" +
                 "id='" + id + "'" +
                 ", name='" + name + "'" +
                 ", description='" + description + "'" +
