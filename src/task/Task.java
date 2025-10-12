@@ -50,12 +50,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\nTask{" +
-                "id='" + id + "'" +
-                ", name='" + name + "'" +
-                ", description='" + description + "'" +
-                ", status=" + status +
-                "}";
+        return id + ",TASK," +
+                name + "," +
+                status + "," +
+                description;
     }
 
     @Override
