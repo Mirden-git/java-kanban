@@ -1,6 +1,8 @@
 package manager;
 
 import exceptions.ManagerSaveException;
+import task.Epic;
+import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
@@ -15,6 +17,11 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path fileName;
 
+    private static int id;
+    private static String name;
+    private static String description;
+    private static TaskStatus status;
+
     public FileBackedTaskManager(Path fileName) {
         super();
         this.fileName = fileName;
@@ -27,8 +34,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 System.out.printf("Ошибка создания файла %s", fileName);
             }
         }
-
-        loadFromFile(fileName.toFile());
     }
 
     public void save() {
@@ -67,7 +72,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    private static FileBackedTaskManager loadFromFile(File file) {
+    private static void fieldsPrepare(String[] arrayOfFields) {
+        id = Integer.parseInt(arrayOfFields[0]);
+        name = arrayOfFields[2];
+        status = TaskStatus.valueOf(arrayOfFields[3]);
+        description = arrayOfFields[4];
+    }
+
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file.toPath());
 
         try (BufferedReader fileReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
@@ -84,9 +96,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 switch (splitOfLine[1]) {
                     case "TASK": {
-                        int id = Integer.parseInt(splitOfLine[0]);
-                        String name = splitOfLine[2];
-                        TaskStatus status;
+                        fieldsPrepare(splitOfLine);
+                        Task taskToRestore = new Task(id, name, description);
+                        manager.addTask(taskToRestore);
+                        manager.getTasks().get(id).setStatus(status);
+                    }
+                    case "SUBTASK": {
+                        fieldsPrepare(splitOfLine);
+                        int epicId = Integer.parseInt(splitOfLine[5]);
+                        Subtask taskToRestore = new Subtask(id, name, description, epicId);
+                        manager.addSubtask(taskToRestore);
+                        manager.getSubtasks().get(id).setStatus(status);
+                    }
+                    case "EPIC": {
+                        fieldsPrepare(splitOfLine);
+                        Epic taskToRestore = new Epic(id, name, description);
+                        manager.addEpic(taskToRestore);
+                        manager.getEpics().get(id).setStatus(status);
                     }
                 }
             }

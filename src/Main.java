@@ -1,10 +1,13 @@
+import manager.FileBackedTaskManager;
 import manager.TaskManager;
 import manager.Managers;
+
+import java.nio.file.Paths;
 
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = FileBackedTaskManager.loadFromFile(Paths.get("d:/Tasks/tasks.csv").toFile());
 
         taskManager.addTask("Задача A", "Описание задачи A");
         int taskAId = taskManager.getIdCount();
