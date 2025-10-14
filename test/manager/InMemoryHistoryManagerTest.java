@@ -35,5 +35,4 @@ public class InMemoryHistoryManagerTest {
         Task fromHistory = history.getFirst();
         assertEquals(TaskStatus.NEW, fromHistory.getStatus());
     }
-
 }

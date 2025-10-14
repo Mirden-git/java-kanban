@@ -1,4 +1,3 @@
-
 package task;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return super.getId() + ",EPIC," +
+        return super.getId() + "," + TypeOfTask.EPIC + "," +
                 super.getName() + "," +
                 super.getStatus() + "," +
                 super.getDescription();

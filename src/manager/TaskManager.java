@@ -60,6 +60,4 @@ public interface TaskManager {
     void changeEpicStatus(int id);
 
     List<Task> getHistory();
-
-    //void newActions();
 }

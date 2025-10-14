@@ -50,7 +50,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + ",TASK," +
+        return id + "," + TypeOfTask.TASK + "," +
                 name + "," +
                 status + "," +
                 description;

@@ -6,10 +6,6 @@ public class Managers {
         return new InMemoryTaskManager();
     }
 
-//    public static TaskManager getFileDefault() {
-//        return new FileBackedTaskManager(Paths.get("d:/Tasks/tasks.csv"));
-//    }
-
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
     }

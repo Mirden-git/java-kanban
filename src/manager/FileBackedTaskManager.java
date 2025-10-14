@@ -1,10 +1,7 @@
 package manager;
 
 import exceptions.ManagerSaveException;
-import task.Epic;
-import task.Subtask;
-import task.Task;
-import task.TaskStatus;
+import task.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +19,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super();
 
         if (file == null) {
-            throw new ManagerSaveException();
+            throw new RuntimeException();
         }
 
         this.file = file.getAbsoluteFile();
@@ -32,7 +29,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Path parent = path.getParent();
 
             if (Files.isDirectory(path)) {
-                throw new ManagerSaveException();
+                System.out.println("Передан не файл, а директория");
             }
 
             if (parent != null) {
@@ -44,7 +41,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            System.out.println("Ошибка файла");
         }
     }
 
@@ -84,10 +81,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
+    private Task taskFromString(String value) {
+        String[] splitOfLine = value.split(",");
+        int id = Integer.parseInt(splitOfLine[0]);
+        String name = splitOfLine[2];
+        TaskStatus status = TaskStatus.valueOf(splitOfLine[3]);
+        String description = splitOfLine[4];
+        Task task;
+        TypeOfTask type = TypeOfTask.valueOf(splitOfLine[1]);
+
+        if (type == TypeOfTask.SUBTASK) {
+            int epicId = Integer.parseInt(splitOfLine[5]);
+            task = new Subtask(id, name, description, epicId);
+        } else if (type == TypeOfTask.EPIC) {
+            task = new Epic(id, name, description);
+        } else {
+            task = new Task(id, name, description);
+        }
+
+        task.setStatus(status);
+        return task;
+    }
+
     public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
-        record FieldsOfTasks(int id, String name, TaskStatus status, String description) {
-        }
 
         try (BufferedReader fileReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
             fileReader.readLine();
@@ -99,37 +116,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
 
-                String[] splitOfLine = line.split(",");
-                FieldsOfTasks f = new FieldsOfTasks(
-                        Integer.parseInt(splitOfLine[0]),
-                        splitOfLine[2],
-                        TaskStatus.valueOf(splitOfLine[3]),
-                        splitOfLine[4]
-                );
+                Task task = manager.taskFromString(line);
 
-                switch (splitOfLine[1]) {
-                    case "SUBTASK": {
-                        int epicId = Integer.parseInt(splitOfLine[5]);
-                        Subtask taskToRestore = new Subtask(f.id, f.name, f.description, epicId);
-                        manager.addSubtask(taskToRestore);
-                        manager.getSubtasks().get(f.id).setStatus(f.status);
-                        break;
-                    }
-                    case "EPIC": {
-                        Epic taskToRestore = new Epic(f.id, f.name, f.name);
-                        manager.addEpic(taskToRestore);
-                        manager.getEpics().get(f.id).setStatus(f.status);
-                        break;
-                    }
-                    case "TASK": {
-                        Task taskToRestore = new Task(f.id, f.name, f.name);
-                        manager.addTask(taskToRestore);
-                        manager.getTasks().get(f.id).setStatus(f.status);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                if (task instanceof Subtask subtask) {
+                    manager.addSubtask(subtask);
+                } else if (task instanceof Epic epic) {
+                    manager.addEpic(epic);
+                } else {
+                    manager.addTask(task);
                 }
             }
         } catch (Exception e) {
