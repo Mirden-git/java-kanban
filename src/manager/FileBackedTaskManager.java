@@ -15,30 +15,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final Path fileName;
+    private final File file;
+    private final Path path;
 
-    private static int id;
-    private static String name;
-    private static String description;
-    private static TaskStatus status;
-
-    public FileBackedTaskManager(Path fileName) {
+    public FileBackedTaskManager(File file) {
         super();
-        this.fileName = fileName;
 
-        if (Files.notExists(fileName)) {
+        if (file == null) {
+            throw new ManagerSaveException();
+        }
 
-            try {
-                Files.createFile(fileName);
-            } catch (IOException e) {
-                System.out.printf("Ошибка создания файла %s", fileName);
+        this.file = file.getAbsoluteFile();
+        this.path = this.file.toPath();
+
+        try {
+            Path parent = path.getParent();
+
+            if (Files.isDirectory(path)) {
+                throw new ManagerSaveException();
             }
+
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+
+            if (Files.notExists(path)) {
+                Files.createFile(path);
+            }
+
+        } catch (IOException e) {
+            throw new ManagerSaveException();
         }
     }
 
     public void save() {
 
-        try (BufferedWriter fileWriter = Files.newBufferedWriter(fileName, StandardCharsets.UTF_8,
+        try (BufferedWriter fileWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             List<String> listOfAllTasks = new ArrayList<>();
 
@@ -63,7 +75,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
         } catch (IOException e) {
-            throw new ManagerSaveException(e);
+            throw new ManagerSaveException();
         }
     }
 
@@ -72,47 +84,51 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    private static void fieldsPrepare(String[] arrayOfFields) {
-        id = Integer.parseInt(arrayOfFields[0]);
-        name = arrayOfFields[2];
-        status = TaskStatus.valueOf(arrayOfFields[3]);
-        description = arrayOfFields[4];
-    }
-
     public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager manager = new FileBackedTaskManager(file.toPath());
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        record FieldsOfTasks(int id, String name, TaskStatus status, String description) {
+        }
 
         try (BufferedReader fileReader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
             fileReader.readLine();
 
             while (fileReader.ready()) {
+                String line = fileReader.readLine();
 
-                if (fileReader.readLine().isBlank()) {
+                if (line.isBlank()) {
                     continue;
                 }
 
-                String line = fileReader.readLine();
                 String[] splitOfLine = line.split(",");
+                FieldsOfTasks f = new FieldsOfTasks(
+                        Integer.parseInt(splitOfLine[0]),
+                        splitOfLine[2],
+                        TaskStatus.valueOf(splitOfLine[3]),
+                        splitOfLine[4]
+                );
 
                 switch (splitOfLine[1]) {
-                    case "TASK": {
-                        fieldsPrepare(splitOfLine);
-                        Task taskToRestore = new Task(id, name, description);
-                        manager.addTask(taskToRestore);
-                        manager.getTasks().get(id).setStatus(status);
-                    }
                     case "SUBTASK": {
-                        fieldsPrepare(splitOfLine);
                         int epicId = Integer.parseInt(splitOfLine[5]);
-                        Subtask taskToRestore = new Subtask(id, name, description, epicId);
+                        Subtask taskToRestore = new Subtask(f.id, f.name, f.description, epicId);
                         manager.addSubtask(taskToRestore);
-                        manager.getSubtasks().get(id).setStatus(status);
+                        manager.getSubtasks().get(f.id).setStatus(f.status);
+                        break;
                     }
                     case "EPIC": {
-                        fieldsPrepare(splitOfLine);
-                        Epic taskToRestore = new Epic(id, name, description);
+                        Epic taskToRestore = new Epic(f.id, f.name, f.name);
                         manager.addEpic(taskToRestore);
-                        manager.getEpics().get(id).setStatus(status);
+                        manager.getEpics().get(f.id).setStatus(f.status);
+                        break;
+                    }
+                    case "TASK": {
+                        Task taskToRestore = new Task(f.id, f.name, f.name);
+                        manager.addTask(taskToRestore);
+                        manager.getTasks().get(f.id).setStatus(f.status);
+                        break;
+                    }
+                    default: {
+                        break;
                     }
                 }
             }
