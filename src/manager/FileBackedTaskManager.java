@@ -13,7 +13,7 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-    private final Path path;
+//    private final Path path;
 
     public FileBackedTaskManager(File file) {
         super();
@@ -23,7 +23,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         this.file = file.getAbsoluteFile();
-        this.path = this.file.toPath();
+        Path path = this.file.toPath();
+//        this.path = this.file.toPath();
 
         try {
             Path parent = path.getParent();
@@ -47,7 +48,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void save() {
 
-        try (BufferedWriter fileWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8,
+        try (BufferedWriter fileWriter = Files.newBufferedWriter(this.file.toPath(), StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             List<String> listOfAllTasks = new ArrayList<>();
 
@@ -117,6 +118,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
 
                 Task task = manager.taskFromString(line);
+
+//                !!!!!!  if (task.getClass().equals(Subtask.class))
 
                 if (task instanceof Subtask subtask) {
                     manager.addSubtask(subtask);
