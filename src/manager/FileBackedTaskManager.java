@@ -13,7 +13,6 @@ import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
-//    private final Path path;
 
     public FileBackedTaskManager(File file) {
         super();
@@ -24,7 +23,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         this.file = file.getAbsoluteFile();
         Path path = this.file.toPath();
-//        this.path = this.file.toPath();
 
         try {
             Path parent = path.getParent();
@@ -119,12 +117,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 Task task = manager.taskFromString(line);
 
-//                !!!!!!  if (task.getClass().equals(Subtask.class))
-
-                if (task instanceof Subtask subtask) {
-                    manager.addSubtask(subtask);
-                } else if (task instanceof Epic epic) {
-                    manager.addEpic(epic);
+                if (task.getClass().equals(Subtask.class)) {
+                    manager.addSubtask((Subtask) task);
+                } else if (task.getClass().equals(Epic.class)) {
+                    manager.addEpic((Epic) task);
                 } else {
                     manager.addTask(task);
                 }
