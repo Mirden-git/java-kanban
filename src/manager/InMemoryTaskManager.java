@@ -19,6 +19,12 @@ public class InMemoryTaskManager implements TaskManager {
         this.historyManager = Managers.getDefaultHistory();
     }
 
+    // Этот пустой метод будет добавлен в методы, меняющие состав задач, чтобы в новых менеджерах не переопределять их,
+    // дублируя код в некоторой степени. Лишь один этот метод будет переопределяться в новых менеджерах, смотря что и
+    // как они будут делать, сейчас мы пишем новый менеджер для сохранения в файл, а завтра что-то ещё, например в БД
+    protected void newActions() {
+    }
+
     @Override
     public int getIdCount() {
         return idCount;
@@ -63,6 +69,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         tasks.clear();
+        newActions();
     }
 
     @Override
@@ -81,6 +88,8 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setStatus(TaskStatus.NEW);
             }
         }
+
+        newActions();
     }
 
     @Override
@@ -93,6 +102,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epics.clear();
         clearListOfSubtasks();
+        newActions();
     }
 
     @Override
@@ -133,6 +143,7 @@ public class InMemoryTaskManager implements TaskManager {
         Task toStore = new Task(id, task.getName(), task.getDescription());
         tasks.put(id, toStore);
         historyManager.add(tasks.get(id));
+        newActions();
     }
 
     @Override
@@ -155,6 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
         tempEpic.addSubtaskId(id);
         changeEpicStatus(tempEpic.getId());
         historyManager.add(subtasks.get(id));
+        newActions();
     }
 
     @Override
@@ -168,6 +180,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic toStore = new Epic(id, epic.getName(), epic.getDescription());
         epics.put(id, toStore);
         historyManager.add(epics.get(id));
+        newActions();
     }
 
     @Override
@@ -177,6 +190,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(id)) {
             tasks.put(id, task);
         } else System.out.println("в Списке нет задачи с id: " + id);
+
+        newActions();
     }
 
     @Override
@@ -186,6 +201,8 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtasks.containsKey(id)) {
             subtasks.put(id, subtask);
         } else System.out.println("в Списке нет подзадачи с id: " + id);
+
+        newActions();
     }
 
     @Override
@@ -195,12 +212,15 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             epics.put(id, epic);
         } else System.out.println("в Списке нет эпика с id: " + id);
+
+        newActions();
     }
 
     @Override
     public void deleteTask(int id) {
         tasks.remove(id);
         historyManager.remove(id);
+        newActions();
     }
 
     @Override
@@ -226,6 +246,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         changeEpicStatus(epicId);
+        newActions();
     }
 
     @Override
@@ -242,6 +263,8 @@ public class InMemoryTaskManager implements TaskManager {
             epics.remove(id);
             historyManager.remove(id);
         }
+
+        newActions();
     }
 
     @Override
@@ -269,6 +292,8 @@ public class InMemoryTaskManager implements TaskManager {
         Task task = tasks.get(id);
 
         if (task != null) task.setStatus(newStatus);
+
+        newActions();
     }
 
     @Override
@@ -279,6 +304,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         sub.setStatus(newStatus);
         changeEpicStatus(sub.getEpicId());
+        newActions();
     }
 
     @Override
@@ -325,5 +351,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else if (allDone) {
             tempEpic.setStatus(TaskStatus.DONE);
         }
+
+        newActions();
     }
 }
