@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
-    protected T manager;
+    private T manager;
 
-    protected abstract T createManager();
+    abstract T createManager();
 
     @BeforeEach
     public void setUp() {

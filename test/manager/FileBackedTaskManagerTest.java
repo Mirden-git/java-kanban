@@ -22,7 +22,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     @Override
     protected FileBackedTaskManager createManager() {
-        tempFile = path.resolve("testtasks.csv").toFile();
+        tempFile = path.resolve("test.csv").toFile();
         return new FileBackedTaskManager(tempFile);
     }
 
