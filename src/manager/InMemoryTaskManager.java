@@ -161,8 +161,10 @@ public class InMemoryTaskManager implements TaskManager {
         Task newTask = tasks.get(id);
         historyManager.add(newTask);
 
-        if (newTask.getStartTime() != null) {
+        if (newTask.getStartTime() != null && !isTimeIntersectionWithAllTasks(newTask)) {
             prioritizedTasks.add(newTask);
+        } else {
+            System.out.println("Нет времени начала задачи или есть пересечение по времени начала с имеющимися");
         }
 
         newActions();
@@ -191,8 +193,10 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask newSubtask = subtasks.get(id);
         historyManager.add(newSubtask);
 
-        if (newSubtask.getStartTime() != null) {
+        if (newSubtask.getStartTime() != null && !isTimeIntersectionWithAllTasks(newSubtask)) {
             prioritizedTasks.add(newSubtask);
+        } else {
+            System.out.println("Нет времени начала задачи или есть пересечение по времени начала с имеющимися");
         }
 
         newActions();
@@ -216,11 +220,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         int id = task.getId();
 
-        if (tasks.containsKey(id)) {
+        if (tasks.containsKey(id) && !isTimeIntersectionWithAllTasks(task)) {
+            prioritizedTasks.remove(tasks.get(id));
             tasks.put(id, task);
-            prioritizedTasks.remove(task);
             prioritizedTasks.add(task);
-        } else System.out.println("в Списке нет задачи с id: " + id);
+        } else System.out.println("в Списке нет задачи с id: " + id + " или есть пересечение времени");
 
         newActions();
     }
@@ -229,12 +233,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) {
         int id = subtask.getId();
 
-        if (subtasks.containsKey(id)) {
+        if (subtasks.containsKey(id) && !isTimeIntersectionWithAllTasks(subtask)) {
+            prioritizedTasks.remove(subtasks.get(id));
             subtasks.put(id, subtask);
-            prioritizedTasks.remove(subtask);
             prioritizedTasks.add(subtask);
             changeEpicStatus(subtask.getEpicId());
-        } else System.out.println("в Списке нет подзадачи с id: " + id);
+        } else System.out.println("в Списке нет подзадачи с id: " + id + " или есть пересечение времени");
 
         newActions();
     }
@@ -400,7 +404,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Set<Task> getPrioritizedTasks() {
-        return new TreeSet<>(prioritizedTasks);
+        TreeSet<Task> copy = new TreeSet<>(comparator);
+        copy.addAll(prioritizedTasks);
+        return copy;
     }
 
     @Override
