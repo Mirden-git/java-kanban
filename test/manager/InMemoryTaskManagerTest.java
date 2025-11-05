@@ -3,7 +3,7 @@ package manager;
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @Override
-    InMemoryTaskManager createManager() {
+    public InMemoryTaskManager createManager() {
         return new InMemoryTaskManager();
     }
 }
