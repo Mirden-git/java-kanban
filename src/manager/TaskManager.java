@@ -64,7 +64,13 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    Set<Task> getPrioritizedTasks();
+    LocalDateTime getEpicStartTime(List<Subtask> list);
+
+    LocalDateTime getEpicEndTime(int id, List<Subtask> list);
+
+    Duration getEpicDuration(List<Subtask> list);
+
+    List<Task> getPrioritizedTasks();
 
     boolean isTimeIntersection(Task task1, Task task2);
 

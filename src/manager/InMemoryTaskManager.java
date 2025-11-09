@@ -385,28 +385,35 @@ public class InMemoryTaskManager implements TaskManager {
             tempEpic.setStatus(TaskStatus.DONE);
         }
 
-        LocalDateTime startTime = list.stream()
-                .min(Comparator.comparing(Subtask::getStartTime))
-                .get().getStartTime();
-
-        Duration totalDuration = list.stream()
-                .map(Subtask::getDuration)
-                .reduce(Duration.ZERO, Duration::plus);
-
-        LocalDateTime endTime = startTime.plus(totalDuration);
-
-        tempEpic.setStartTime(startTime);
-        tempEpic.setDuration(totalDuration);
-        tempEpic.setEndTime(endTime);
+        tempEpic.setStartTime(getEpicStartTime(list));
+        tempEpic.setDuration(getEpicDuration(list));
+        tempEpic.setEndTime(getEpicEndTime(id, list));
 
         newActions();
     }
 
     @Override
-    public Set<Task> getPrioritizedTasks() {
-        TreeSet<Task> copy = new TreeSet<>(comparator);
-        copy.addAll(prioritizedTasks);
-        return copy;
+    public LocalDateTime getEpicStartTime(List<Subtask> list) {
+        return list.stream()
+                .min(Comparator.comparing(Subtask::getStartTime))
+                .get().getStartTime();
+    }
+
+    @Override
+    public LocalDateTime getEpicEndTime(int id, List<Subtask> list) {
+        return getEpicById(id).getStartTime().plus(getEpicDuration(list));
+    }
+
+    @Override
+    public Duration getEpicDuration(List<Subtask> list) {
+        return list.stream()
+                .map(Subtask::getDuration)
+                .reduce(Duration.ZERO, Duration::plus);
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override

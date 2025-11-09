@@ -20,7 +20,7 @@ public class FileBackedTaskManagerExceptionTest {
     private File file;
 
     @TempDir
-    Path path;
+    private Path path;
 
     private FileBackedTaskManager createManager() {
         file = path.resolve("test.csv").toFile();

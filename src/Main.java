@@ -10,7 +10,7 @@ public class Main {
         TaskManager taskManager;
 
         try {
-            taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("testtasks", "csv"));
+            taskManager = FileBackedTaskManager.loadFromFile(File.createTempFile("test", "csv"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
