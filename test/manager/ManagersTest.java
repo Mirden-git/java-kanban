@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ManagersTest {
@@ -20,16 +23,17 @@ public class ManagersTest {
     @Test
     public void getDefaultTaskManagerReturnsWorkingInstance() {
         assertNotNull(taskManager);
-        taskManager.addTask("A", "B");
+        taskManager.addTask("A", "B",
+                LocalDateTime.of(2025, 1, 1, 12, 0), Duration.ofMinutes(60));
         assertEquals(1, taskManager.getTasks().size());
     }
 
     @Test
     public void getDefaultHistoryManagerReturnsWorkingInstance() {
         assertNotNull(history);
-        Task task = new Task(1, "A", "B");
+        Task task = new Task(1, "A", "B",
+                LocalDateTime.of(2025, 1, 1, 12, 0), Duration.ofMinutes(60));
         history.add(task);
         assertEquals(1, history.getHistoryList().size());
     }
-
 }

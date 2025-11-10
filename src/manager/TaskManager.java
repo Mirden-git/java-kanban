@@ -2,6 +2,8 @@ package manager;
 
 import task.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TaskManager {
@@ -27,15 +29,15 @@ public interface TaskManager {
 
     Epic getEpicById(int id);
 
-    void addTask(String name, String description);
+    void addTask(String name, String description, LocalDateTime startTime, Duration duration);
 
     void addTask(Task task);
 
-    void addSubtask(String name, String description, int epicId);
+    void addSubtask(String name, String description, int epicId, LocalDateTime startTime, Duration duration);
 
     void addSubtask(Subtask subtask);
 
-    void addEpic(String name, String description);
+    void addEpic(String name, String description, LocalDateTime startTime, Duration duration);
 
     void addEpic(Epic epic);
 
@@ -60,4 +62,16 @@ public interface TaskManager {
     void changeEpicStatus(int id);
 
     List<Task> getHistory();
+
+    LocalDateTime getEpicStartTime(List<Subtask> list);
+
+    LocalDateTime getEpicEndTime(int id, List<Subtask> list);
+
+    Duration getEpicDuration(List<Subtask> list);
+
+    List<Task> getPrioritizedTasks();
+
+    boolean isTimeIntersection(Task task1, Task task2);
+
+    boolean isTimeIntersectionWithAllTasks(Task task);
 }

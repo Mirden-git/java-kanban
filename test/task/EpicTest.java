@@ -5,6 +5,7 @@ import manager.TaskManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ public class EpicTest {
 
     @Test
     public void possibilityToAddSubtaskId() {
-        taskManager.addEpic("Эпик 1", "Описание эпика 1");
+        taskManager.addEpic("Эпик 1", "Описание эпика 1", null, Duration.ZERO);
         List<Epic> epics = taskManager.getEpics();
         epics.getFirst().addSubtaskId(taskManager.nextId());
         assertEquals(1, epics.getFirst().getEpicSubtasksId().size());
