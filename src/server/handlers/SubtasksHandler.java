@@ -1,0 +1,21 @@
+package server.handlers;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import manager.TaskManager;
+import server.HttpTaskServer;
+
+import java.io.IOException;
+
+public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
+    private final TaskManager taskManager;
+
+    public SubtasksHandler(TaskManager taskManager) {
+        this.taskManager = taskManager;
+    }
+
+    @Override
+    public void handle(HttpExchange exchange) throws IOException {
+
+    }
+}
