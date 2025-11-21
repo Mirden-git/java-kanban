@@ -1,20 +1,11 @@
 package server.handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
-import server.adapters.DurationAdapter;
-import server.adapters.LocalDateTimeAdapter;
 import task.Epic;
-import task.Task;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
@@ -65,41 +56,18 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                 }
             }
             case "POST": {
-                String epicFromJson = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                System.out.println("body = " + epicFromJson); //todo удалить
-                Epic epic = gson.fromJson(epicFromJson, Epic.class);
-                System.out.println("Задача " + epic); //todo удалить
-
-                boolean isIntersection = taskManager.isTimeIntersectionWithAllTasks(epic);
-
-                if (isIntersection) {
-                    sendHasOverlaps(exchange);
-                    return;
-                }
-
-                if (taskManager.getEpicById(epic.getId()) == null) {
-                    taskManager.addEpic(epic);
-                } else {
-                    taskManager.updateEpic(epic);
-                }
-
-                sendOk(exchange);
+                handlePost(
+                        exchange,
+                        Epic.class,
+                        epic -> false,
+                        epic -> taskManager.getEpicById(epic.getId()) == null,
+                        taskManager::addEpic,
+                        taskManager::updateEpic
+                );
                 break;
             }
             case "DELETE": {
-                Optional<Integer> idOpt = getIdFromPath(exchange);
-
-                if (splitPath.length == 3 && idOpt.isPresent()) {
-                    boolean isTaskExist = taskManager.getTaskById(idOpt.get()) != null;
-
-                    if (isTaskExist) {
-                        taskManager.deleteTask(idOpt.get());
-                        sendText(exchange, "Задача удалена");
-                    } else {
-                        sendNotFound(exchange);
-                    }
-                }
-
+                handleDelete(exchange, taskManager::getEpicById, taskManager::deleteEpic);
                 break;
             }
             default: {
