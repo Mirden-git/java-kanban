@@ -63,8 +63,30 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                         System.out.println("body = " + taskFromJson);
                         Task task = gson.fromJson(taskFromJson, Task.class);
                         System.out.println("Задача " + task);
-                        taskManager.addTask(task);
-                        sendText(exchange, "Задача добавлена");
+
+                        if (taskManager.getTaskById(task.getId()) == null) {
+                            taskManager.addTask(task);
+                        } else {
+                            taskManager.updateTask(task);
+                        }
+
+                        sendOk(exchange);
+                        break;
+                    }
+                    case "DELETE": {
+                        Optional<Integer> idOpt = getIdFromPath(exchange);
+
+                        if (splitPath.length == 3 && idOpt.isPresent()) {
+                            boolean isTaskExist = taskManager.getTaskById(idOpt.get()) != null;
+
+                            if (isTaskExist) {
+                                taskManager.deleteTask(idOpt.get());
+                                sendOk(exchange);
+                            } else {
+                                sendNotFound(exchange);
+                            }
+                        }
+
                         break;
                     }
                     default: {

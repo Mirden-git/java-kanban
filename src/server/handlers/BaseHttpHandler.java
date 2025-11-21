@@ -27,4 +27,10 @@ public class BaseHttpHandler {
         h.getResponseBody().write("Not acceptable".getBytes());
         h.close();
     }
+
+    protected void sendOk(HttpExchange h) throws IOException {
+        h.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        h.sendResponseHeaders(201, 0);
+        h.close();
+    }
 }
