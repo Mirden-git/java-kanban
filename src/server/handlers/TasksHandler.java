@@ -1,18 +1,12 @@
 package server.handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import manager.TaskManager;
-import server.adapters.DurationAdapter;
-import server.adapters.LocalDateTimeAdapter;
 import task.Task;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class TasksHandler extends BaseHttpHandler implements HttpHandler {
@@ -24,93 +18,72 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String request = exchange.getRequestMethod();
-        String path = exchange.getRequestURI().getPath();
-        String[] splitPath = path.split("/");
-        String type = splitPath[1];
-        GsonBuilder gsonBuilder = new GsonBuilder()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-                .registerTypeAdapter(Duration.class, new DurationAdapter())
-                .setPrettyPrinting();
-        Gson gson = gsonBuilder.create();
+        prepareHandler(exchange);
 
-        switch (type) {
-            case "tasks": {
-                switch (request) {
-                    case "GET": {
-                        String text = "";
+        switch (request) {
+            case "GET": {
+                String text;
 
-                        if (splitPath.length == 2) {
-                            text = gson.toJson(taskManager.getTasks());
-                        } else if (splitPath.length == 3 && getIdFromPath(exchange).isPresent()) {
-                            int id = getIdFromPath(exchange).get();
-                            Task task = taskManager.getTaskById(id);
-                            if (task != null) {
-                                text = gson.toJson(task);
-                            } else {
-                                sendNotFound(exchange);
-                                return;
-                            }
-                        } else {
-                            sendNotFound(exchange);
-                            return;
-                        }
-                        sendText(exchange, text);
-                        break;
+                if (splitPath.length == 2) {
+                    text = gson.toJson(taskManager.getTasks());
+                } else if (splitPath.length == 3 && getIdFromPath(exchange).isPresent()) {
+                    int id = getIdFromPath(exchange).get();
+                    Task task = taskManager.getTaskById(id);
+                    if (task != null) {
+                        text = gson.toJson(task);
+                    } else {
+                        sendNotFound(exchange);
+                        return;
                     }
-                    case "POST": {
-                        String taskFromJson = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                        System.out.println("body = " + taskFromJson);
-                        Task task = gson.fromJson(taskFromJson, Task.class);
-                        System.out.println("Задача " + task);
+                } else {
+                    sendNotFound(exchange);
+                    return;
+                }
 
-                        if (taskManager.getTaskById(task.getId()) == null) {
-                            taskManager.addTask(task);
-                        } else {
-                            taskManager.updateTask(task);
-                        }
+                sendText(exchange, text);
+                break;
+            }
+            case "POST": {
+                String taskFromJson = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println("body = " + taskFromJson); //todo удалить
+                Task task = gson.fromJson(taskFromJson, Task.class);
+                System.out.println("Задача " + task); //todo удалить
 
-                        sendOk(exchange);
-                        break;
-                    }
-                    case "DELETE": {
-                        Optional<Integer> idOpt = getIdFromPath(exchange);
+                boolean isIntersection = taskManager.isTimeIntersectionWithAllTasks(task);
 
-                        if (splitPath.length == 3 && idOpt.isPresent()) {
-                            boolean isTaskExist = taskManager.getTaskById(idOpt.get()) != null;
+                if (isIntersection) {
+                    sendHasOverlaps(exchange);
+                    return;
+                }
 
-                            if (isTaskExist) {
-                                taskManager.deleteTask(idOpt.get());
-                                sendOk(exchange);
-                            } else {
-                                sendNotFound(exchange);
-                            }
-                        }
+                if (taskManager.getTaskById(task.getId()) == null) {
+                    taskManager.addTask(task);
+                } else {
+                    taskManager.updateTask(task);
+                }
 
-                        break;
-                    }
-                    default: {
+                sendOk(exchange);
+                break;
+            }
+            case "DELETE": {
+                Optional<Integer> idOpt = getIdFromPath(exchange);
+
+                if (splitPath.length == 3 && idOpt.isPresent()) {
+                    boolean isTaskExist = taskManager.getTaskById(idOpt.get()) != null;
+
+                    if (isTaskExist) {
+                        taskManager.deleteTask(idOpt.get());
+                        sendText(exchange, "Задача удалена");
+                    } else {
+                        sendNotFound(exchange);
                     }
                 }
-                break;
-            }
-            case "subtasks": {
-                break;
-            }
-            case "epics": {
+
                 break;
             }
             default: {
+                sendNotFound(exchange);
             }
-        }
-    }
-
-    private Optional<Integer> getIdFromPath(HttpExchange exchange) {
-        String[] pathParts = exchange.getRequestURI().getPath().split("/");
-        try {
-            return Optional.of(Integer.parseInt(pathParts[2]));
-        } catch (NumberFormatException exception) {
-            return Optional.empty();
         }
     }
 }
