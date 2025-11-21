@@ -62,6 +62,13 @@ public class BaseHttpHandler {
         h.close();
     }
 
+    protected void sendServerError(HttpExchange h) throws IOException {
+        h.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        h.sendResponseHeaders(500, 0);
+        h.getResponseBody().write("Internal Server Error".getBytes());
+        h.close();
+    }
+
     protected Optional<Integer> getIdFromPath(HttpExchange exchange) {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
 
@@ -74,7 +81,7 @@ public class BaseHttpHandler {
 
     protected void handleDelete(
             HttpExchange h,
-            Function<Integer, ?> getById,
+//            Function<Integer, ?> getById,
             IntConsumer deleteById
     ) throws IOException {
         Optional<Integer> idOpt = getIdFromPath(h);
@@ -82,12 +89,12 @@ public class BaseHttpHandler {
         if (splitPath.length == 3 && idOpt.isPresent()) {
             int id = idOpt.get();
 
-            if (getById.apply(id) != null) {
+//            if (getById.apply(id) != null) {
                 deleteById.accept(id);
                 sendText(h, "Задача удалена");
-            } else {
-                sendNotFound(h);
-            }
+//            } else {
+//                sendNotFound(h);
+//            }
         } else {
             sendNotFound(h);
         }

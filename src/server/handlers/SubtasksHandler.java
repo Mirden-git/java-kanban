@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.NotFoundException;
 import manager.TaskManager;
 import task.Subtask;
 
@@ -16,31 +17,37 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        prepareHandler(exchange);
+        try {
+            prepareHandler(exchange);
 
-        switch (request) {
-            case "GET": {
-                handleGet(exchange, taskManager::getSubtasks, taskManager::getSubtaskById);
-                break;
+            switch (request) {
+                case "GET": {
+                    handleGet(exchange, taskManager::getSubtasks, taskManager::getSubtaskById);
+                    break;
+                }
+                case "POST": {
+                    handlePost(
+                            exchange,
+                            Subtask.class,
+                            taskManager::isTimeIntersectionWithAllTasks,
+                            subtask -> taskManager.getSubtaskById(subtask.getId()) == null,
+                            taskManager::addSubtask,
+                            taskManager::updateSubtask
+                    );
+                    break;
+                }
+                case "DELETE": {
+                    handleDelete(exchange, taskManager::deleteSubtask);
+                    break;
+                }
+                default: {
+                    sendNotFound(exchange);
+                }
             }
-            case "POST": {
-                handlePost(
-                        exchange,
-                        Subtask.class,
-                        taskManager::isTimeIntersectionWithAllTasks,
-                        subtask -> taskManager.getSubtaskById(subtask.getId()) == null,
-                        taskManager::addSubtask,
-                        taskManager::updateSubtask
-                );
-                break;
-            }
-            case "DELETE": {
-                handleDelete(exchange, taskManager::getSubtaskById, taskManager::deleteSubtask);
-                break;
-            }
-            default: {
-                sendNotFound(exchange);
-            }
+        } catch (NotFoundException e) {
+            sendNotFound(exchange);
+        } catch (Exception e) {
+            sendServerError(exchange);
         }
     }
 }
