@@ -62,7 +62,7 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
                             exchange,
                             Epic.class,
                             epic -> false,
-                            epic -> taskManager.getEpicById(epic.getId()) == null,
+                            epic -> taskManager.isEpicExists(epic.getId()),
                             taskManager::addEpic,
                             taskManager::updateEpic
                     );

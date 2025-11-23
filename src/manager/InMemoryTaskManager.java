@@ -167,11 +167,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void addTask(Task task) {
         int id = nextId();
         Task toStore = new Task(id, task.getName(), task.getDescription(), task.getStartTime(), task.getDuration());
-        tasks.put(id, toStore);
-        Task newTask = tasks.get(id);
-        historyManager.add(newTask);
 
-        if (newTask.getStartTime() != null && !isTimeIntersectionWithAllTasks(newTask)) {
+        if (toStore.getStartTime() != null && !isTimeIntersectionWithAllTasks(toStore)) {
+            tasks.put(id, toStore);
+            Task newTask = tasks.get(id);
+            historyManager.add(newTask);
             prioritizedTasks.add(newTask);
         } else {
             System.out.println("Нет времени начала задачи или есть пересечение по времени начала с имеющимися");
@@ -197,13 +197,13 @@ public class InMemoryTaskManager implements TaskManager {
         int id = nextId();
         Subtask toStore = new Subtask(id, subtask.getName(), subtask.getDescription(), subtask.getEpicId(),
                 subtask.getStartTime(), subtask.getDuration());
-        subtasks.put(id, toStore);
-        tempEpic.addSubtaskId(id);
-        changeEpicStatus(tempEpic.getId());
-        Subtask newSubtask = subtasks.get(id);
-        historyManager.add(newSubtask);
 
-        if (newSubtask.getStartTime() != null && !isTimeIntersectionWithAllTasks(newSubtask)) {
+        if (toStore.getStartTime() != null && !isTimeIntersectionWithAllTasks(toStore)) {
+            subtasks.put(id, toStore);
+            tempEpic.addSubtaskId(id);
+            changeEpicStatus(tempEpic.getId());
+            Subtask newSubtask = subtasks.get(id);
+            historyManager.add(newSubtask);
             prioritizedTasks.add(newSubtask);
         } else {
             System.out.println("Нет времени начала задачи или есть пересечение по времени начала с имеющимися");
@@ -447,5 +447,20 @@ public class InMemoryTaskManager implements TaskManager {
                 .filter(item -> item.getId() != task.getId())
                 .anyMatch(item -> isTimeIntersection(item, task));
         return result1 || result2;
+    }
+
+    @Override
+    public boolean isTaskExists(int id) {
+        return tasks.containsKey(id);
+    }
+
+    @Override
+    public boolean isSubtaskExists(int id) {
+        return subtasks.containsKey(id);
+    }
+
+    @Override
+    public boolean isEpicExists(int id) {
+        return epics.containsKey(id);
     }
 }

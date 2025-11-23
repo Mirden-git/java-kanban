@@ -30,7 +30,7 @@ public class SubtasksHandler extends BaseHttpHandler implements HttpHandler {
                             exchange,
                             Subtask.class,
                             taskManager::isTimeIntersectionWithAllTasks,
-                            subtask -> taskManager.getSubtaskById(subtask.getId()) == null,
+                            subtask -> taskManager.isSubtaskExists(subtask.getId()),
                             taskManager::addSubtask,
                             taskManager::updateSubtask
                     );

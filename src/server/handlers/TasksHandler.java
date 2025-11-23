@@ -30,7 +30,7 @@ public class TasksHandler extends BaseHttpHandler implements HttpHandler {
                             exchange,
                             Task.class,
                             taskManager::isTimeIntersectionWithAllTasks,
-                            task -> taskManager.getTaskById(task.getId()) == null,
+                            task -> taskManager.isTaskExists(task.getId()),
                             taskManager::addTask,
                             taskManager::updateTask
                     );

@@ -81,20 +81,14 @@ public class BaseHttpHandler {
 
     protected void handleDelete(
             HttpExchange h,
-//            Function<Integer, ?> getById,
             IntConsumer deleteById
     ) throws IOException {
         Optional<Integer> idOpt = getIdFromPath(h);
 
         if (splitPath.length == 3 && idOpt.isPresent()) {
             int id = idOpt.get();
-
-//            if (getById.apply(id) != null) {
-                deleteById.accept(id);
-                sendText(h, "Задача удалена");
-//            } else {
-//                sendNotFound(h);
-//            }
+            deleteById.accept(id);
+            sendText(h, "Задача удалена");
         } else {
             sendNotFound(h);
         }

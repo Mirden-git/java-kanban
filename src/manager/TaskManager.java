@@ -74,4 +74,10 @@ public interface TaskManager {
     boolean isTimeIntersection(Task task1, Task task2);
 
     boolean isTimeIntersectionWithAllTasks(Task task);
+
+    boolean isTaskExists(int id);
+
+    boolean isSubtaskExists(int id);
+
+    boolean isEpicExists(int id);
 }
