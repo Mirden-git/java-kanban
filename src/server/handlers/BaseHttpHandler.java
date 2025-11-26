@@ -140,7 +140,7 @@ public class BaseHttpHandler {
             return;
         }
 
-        if (isNewEntity.test(entity)) {
+        if (!isNewEntity.test(entity)) {
             addEntity.accept(entity);
         } else {
             updateEntity.accept(entity);

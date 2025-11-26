@@ -82,18 +82,18 @@ class TasksHandlerTest {
         assertEquals(201, response.statusCode());
 
         // Проверим, что задача появилась в списке
-//        HttpRequest getAll = HttpRequest.newBuilder()
-//                .uri(URI.create(BASE_URL + "/tasks"))
-//                .GET()
-//                .build();
-//
-//        HttpResponse<String> getResponse = client.send(getAll, HttpResponse.BodyHandlers.ofString());
-//        Task[] tasks = gson.fromJson(getResponse.body(), Task[].class);
-//        assertTrue(tasks.length >= 1);
-//        assertTrue(
-//                java.util.Arrays.stream(tasks)
-//                        .anyMatch(t -> "Test task".equals(t.getName()))
-//        );
+        HttpRequest getAll = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/tasks"))
+                .GET()
+                .build();
+
+        HttpResponse<String> getResponse = client.send(getAll, HttpResponse.BodyHandlers.ofString());
+        Task[] tasks = gson.fromJson(getResponse.body(), Task[].class);
+        assertTrue(tasks.length >= 1);
+        assertTrue(
+                java.util.Arrays.stream(tasks)
+                        .anyMatch(t -> "Test task".equals(t.getName()))
+        );
     }
 
     @Test

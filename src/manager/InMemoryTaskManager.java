@@ -451,16 +451,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean isTaskExists(int id) {
-        return !tasks.containsKey(id);
+        return tasks.containsKey(id);
     }
 
     @Override
     public boolean isSubtaskExists(int id) {
-        return !subtasks.containsKey(id);
+        return subtasks.containsKey(id);
     }
 
     @Override
     public boolean isEpicExists(int id) {
-        return !epics.containsKey(id);
+        return epics.containsKey(id);
     }
 }
