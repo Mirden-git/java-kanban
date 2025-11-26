@@ -44,45 +44,10 @@ class SubtasksHandlerTest {
         HttpTaskServer.stop();
     }
 
-    private int createEpicAndGetId() throws IOException, InterruptedException {
-
-        String body = """
-                {
-                  "id": 0,
-                  "name": "Epic for subtasks",
-                  "description": "desc",
-                  "startTime": "23.11.2025 10:00",
-                  "duration": "PT0M"
-                }
-                """;
-
-        HttpRequest post = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/epics"))
-                .POST(HttpRequest.BodyPublishers.ofString(body))
-                .header("Content-Type", "application/json")
-                .build();
-        client.send(post, HttpResponse.BodyHandlers.ofString());
-
-        HttpRequest getAll = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/epics"))
-                .GET()
-                .build();
-        HttpResponse<String> resp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
-        Epic[] epics = gson.fromJson(resp.body(), Epic[].class);
-
-        return java.util.Arrays.stream(epics)
-                .filter(e -> "Epic for subtasks".equals(e.getName()))
-                .findFirst()
-                .orElseThrow()
-                .getId();
-    }
-
     @Test
     void shouldCreateSubtaskForEpic() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
         int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
-
-//        int epicId = createEpicAndGetId();
 
         String body = """
                 {
@@ -121,8 +86,6 @@ class SubtasksHandlerTest {
         HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
         int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
 
-//        int epicId = createEpicAndGetId();
-
         String body1 = """
                 {
                   "id": 0,
@@ -133,7 +96,6 @@ class SubtasksHandlerTest {
                   "duration": "PT60M"
                 }
                 """.formatted(epicId);
-
         HttpRequest post1 = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(body1))
@@ -151,7 +113,6 @@ class SubtasksHandlerTest {
                   "duration": "PT30M"
                 }
                 """.formatted(epicId);
-
         HttpRequest post2 = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/subtasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(body2))

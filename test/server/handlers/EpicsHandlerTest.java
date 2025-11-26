@@ -72,13 +72,11 @@ class EpicsHandlerTest {
                   "duration": "PT0M"
                 }
                 """;
-
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics"))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("Content-Type", "application/json")
                 .build();
-        System.out.println("пост: " + post);
         HttpResponse<String> postResp = client.send(post, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, postResp.statusCode());
 
@@ -87,12 +85,10 @@ class EpicsHandlerTest {
                 .GET()
                 .build();
         HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-        System.out.println(getResp.body());
-        System.out.println(getResp.body());
         Epic[] epics = gson.fromJson(getResp.body(), Epic[].class);
 
         assertTrue(epics.length >= 1);
-        assertTrue(java.util.Arrays.stream(epics)
+        assertTrue(Arrays.stream(epics)
                 .anyMatch(e -> "Epic 1".equals(e.getName())));
     }
 
@@ -128,10 +124,6 @@ class EpicsHandlerTest {
                 .findFirst()
                 .orElseThrow();
 
-//        int epicId = HttpTaskServer.taskManager.getEpics().getLast().getId();
-//        System.out.println("эпик: " + epicId);
-//        HttpTaskServer.taskManager.addSubtask("Подзадача","Описание", epicId,
-//                LocalDateTime.of(2025, 1, 1, 14, 0), Duration.ofMinutes(60));
         HttpRequest getById = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics/" + created.getId()))
                 .GET()

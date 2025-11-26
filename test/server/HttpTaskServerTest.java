@@ -34,7 +34,6 @@ class HttpTaskServerTest {
                 .uri(URI.create(BASE_URL + "/unknown"))
                 .GET()
                 .build();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(404, response.statusCode());

@@ -17,6 +17,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +51,6 @@ class TasksHandlerTest {
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
                 .build();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(200, response.statusCode());
@@ -70,35 +70,29 @@ class TasksHandlerTest {
                   "duration": "PT30M"
                 }
                 """;
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("Content-Type", "application/json")
                 .build();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals(201, response.statusCode());
 
-        // Проверим, что задача появилась в списке
         HttpRequest getAll = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
                 .build();
         HttpResponse<String> getResponse = client.send(getAll, HttpResponse.BodyHandlers.ofString());
-//        System.out.println(getResponse.body());
         Task[] tasks = gson.fromJson(getResponse.body(), Task[].class);
         assertTrue(tasks.length >= 1);
-        assertTrue(
-                java.util.Arrays.stream(tasks)
+        assertTrue(Arrays.stream(tasks)
                         .anyMatch(t -> "Test task".equals(t.getName()))
         );
     }
 
     @Test
     void shouldReturnTaskById() throws IOException, InterruptedException {
-        // Создаём задачу
         String body = """
                 {
                   "id": 0,
@@ -108,7 +102,6 @@ class TasksHandlerTest {
                   "duration": "PT45M"
                 }
                 """;
-
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -116,7 +109,6 @@ class TasksHandlerTest {
                 .build();
         client.send(post, HttpResponse.BodyHandlers.ofString());
 
-        // Находим её id через GET /tasks
         HttpRequest getAll = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
@@ -124,7 +116,7 @@ class TasksHandlerTest {
         HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
         Task[] tasks = gson.fromJson(getResp.body(), Task[].class);
 
-        Task created = java.util.Arrays.stream(tasks)
+        Task created = Arrays.stream(tasks)
                 .filter(t -> "Task for getById".equals(t.getName()))
                 .findFirst()
                 .orElseThrow();
@@ -133,7 +125,6 @@ class TasksHandlerTest {
                 .uri(URI.create(BASE_URL + "/tasks/" + created.getId()))
                 .GET()
                 .build();
-
         HttpResponse<String> response = client.send(getById, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
@@ -148,14 +139,12 @@ class TasksHandlerTest {
                 .uri(URI.create(BASE_URL + "/tasks/999999"))
                 .GET()
                 .build();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(404, response.statusCode());
     }
 
     @Test
     void shouldDeleteTaskAndReturn200() throws IOException, InterruptedException {
-        // Создаём задачу
         String body = """
                 {
                   "id": 0,
@@ -165,7 +154,6 @@ class TasksHandlerTest {
                   "duration": "PT30M"
                 }
                 """;
-
         HttpRequest post = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .POST(HttpRequest.BodyPublishers.ofString(body))
@@ -173,7 +161,6 @@ class TasksHandlerTest {
                 .build();
         client.send(post, HttpResponse.BodyHandlers.ofString());
 
-        // Находим id
         HttpRequest getAll = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
@@ -181,7 +168,7 @@ class TasksHandlerTest {
         HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
         Task[] tasks = gson.fromJson(getResp.body(), Task[].class);
 
-        Task toDelete = java.util.Arrays.stream(tasks)
+        Task toDelete = Arrays.stream(tasks)
                 .filter(t -> "Task for delete".equals(t.getName()))
                 .findFirst()
                 .orElseThrow();
@@ -190,14 +177,12 @@ class TasksHandlerTest {
                 .uri(URI.create(BASE_URL + "/tasks/" + toDelete.getId()))
                 .DELETE()
                 .build();
-
         HttpResponse<String> deleteResp = client.send(delete, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, deleteResp.statusCode());
     }
 
     @Test
     void shouldReturn406OnTimeIntersection() throws IOException, InterruptedException {
-        // Первая задача
         String body1 = """
                 {
                   "id": 0,
@@ -214,7 +199,6 @@ class TasksHandlerTest {
                 .build();
         client.send(post1, HttpResponse.BodyHandlers.ofString());
 
-        // Вторая задача с пересечением по времени
         String body2 = """
                 {
                   "id": 0,

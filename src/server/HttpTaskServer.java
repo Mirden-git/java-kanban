@@ -33,13 +33,13 @@ public class HttpTaskServer {
             httpServer.start();
             System.out.println("Сервер запущен на " + PORT + " порту");
         } catch (IOException e) {
-            throw new RuntimeException(e); //todo отработать исключение
+            System.out.println("Сервер не запущен");
         }
     }
 
     public static void stop() {
         if (httpServer != null) {
-            httpServer.stop(10); //todo определиться с остановкой сервера
+            httpServer.stop(0);
         }
     }
 }
