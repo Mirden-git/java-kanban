@@ -86,8 +86,8 @@ class TasksHandlerTest {
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
                 .build();
-
         HttpResponse<String> getResponse = client.send(getAll, HttpResponse.BodyHandlers.ofString());
+//        System.out.println(getResponse.body());
         Task[] tasks = gson.fromJson(getResponse.body(), Task[].class);
         assertTrue(tasks.length >= 1);
         assertTrue(

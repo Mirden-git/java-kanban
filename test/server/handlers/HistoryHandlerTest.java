@@ -17,6 +17,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,6 +43,15 @@ class HistoryHandlerTest {
 
     @Test
     void shouldReturnHistoryAfterAccessingTask() throws IOException, InterruptedException {
+        HttpRequest historyReq1 = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/history"))
+                .GET()
+                .build();
+        HttpResponse<String> historyResp1 = client.send(historyReq1, HttpResponse.BodyHandlers.ofString());
+        Task[] history = gson.fromJson(historyResp1.body(), Task[].class);
+        int initialLength = history.length;
+
+
         // создаём задачу
         String body = """
                 {
@@ -61,34 +71,34 @@ class HistoryHandlerTest {
         client.send(post, HttpResponse.BodyHandlers.ofString());
 
         // найдём её id
-        HttpRequest getAll = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/tasks"))
-                .GET()
-                .build();
-        HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
-        Task[] tasks = gson.fromJson(getResp.body(), Task[].class);
-        Task created = java.util.Arrays.stream(tasks)
-                .filter(t -> "Task for history".equals(t.getName()))
-                .findFirst()
-                .orElseThrow();
-
-        // обращаемся к задаче по id (чтобы точно попасть в history)
-        HttpRequest getById = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/tasks/" + created.getId()))
-                .GET()
-                .build();
-        client.send(getById, HttpResponse.BodyHandlers.ofString());
+//        HttpRequest getAll = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/tasks"))
+//                .GET()
+//                .build();
+//        HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
+//        Task[] tasks = gson.fromJson(getResp.body(), Task[].class);
+//        Task created = Arrays.stream(tasks)
+//                .filter(t -> "Task for history".equals(t.getName()))
+//                .findFirst()
+//                .orElseThrow();
+//
+//        // обращаемся к задаче по id (чтобы точно попасть в history)
+//        HttpRequest getById = HttpRequest.newBuilder()
+//                .uri(URI.create(BASE_URL + "/tasks/" + created.getId()))
+//                .GET()
+//                .build();
+//        client.send(getById, HttpResponse.BodyHandlers.ofString());
 
         // теперь проверяем /history
-        HttpRequest historyReq = HttpRequest.newBuilder()
+        HttpRequest historyReq2 = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/history"))
                 .GET()
                 .build();
-        HttpResponse<String> historyResp = client.send(historyReq, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> historyResp2 = client.send(historyReq2, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(200, historyResp.statusCode());
-        Task[] history = gson.fromJson(historyResp.body(), Task[].class);
-        assertNotNull(history);
-        assertTrue(history.length >= 1);
+        assertEquals(200, historyResp2.statusCode());
+        Task[] history2 = gson.fromJson(historyResp2.body(), Task[].class);
+        assertNotNull(history2);
+        assertTrue(history2.length == initialLength + 1);
     }
 }

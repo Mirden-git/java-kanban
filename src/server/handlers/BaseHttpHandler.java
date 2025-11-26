@@ -5,11 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import server.adapters.DurationAdapter;
 import server.adapters.LocalDateTimeAdapter;
+import task.Epic;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,10 +37,15 @@ public class BaseHttpHandler {
     }
 
     protected void sendText(HttpExchange h, String text) throws IOException {
+        System.out.println("step 1"); //todo удалить
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
+        System.out.println("step 2"); //todo удалить
         h.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+        System.out.println("step 3"); //todo удалить
         h.sendResponseHeaders(200, resp.length);
+        System.out.println("будем писать в боди"); //todo удалить
         h.getResponseBody().write(resp);
+        System.out.println("записали в боди: " + Arrays.toString(resp)); //todo удалить
         h.close();
     }
 
@@ -104,6 +111,7 @@ public class BaseHttpHandler {
 
         if (splitPath.length == 2) {
             text = gson.toJson(allTasks.get());
+            System.out.println("таски: " + text); //todo удалить
         } else if (splitPath.length == 3 && getIdFromPath(h).isPresent()) {
             int id = getIdFromPath(h).get();
             T entity = getById.apply(id);
@@ -130,9 +138,10 @@ public class BaseHttpHandler {
             Consumer<T> updateEntity
     ) throws IOException {
 
-        String taskFromJson = new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-        System.out.println("body = " + taskFromJson); //todo удалить
-        T entity = gson.fromJson(taskFromJson, type);
+        System.out.println("запущен handlePost");
+        String entityFromJson = new String(h.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+        System.out.println("body = " + entityFromJson); //todo удалить
+        T entity = gson.fromJson(entityFromJson, type);
         System.out.println("Задача " + entity); //todo удалить
 
         if (hasIntersection.test(entity)) {

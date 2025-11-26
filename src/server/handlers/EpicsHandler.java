@@ -26,7 +26,9 @@ public class EpicsHandler extends BaseHttpHandler implements HttpHandler {
 
                     switch (splitPath.length) {
                         case 2: {
+                            System.out.println("step 4"); //todo удалить
                             text = gson.toJson(taskManager.getEpics());
+                            System.out.println("step 5"); //todo удалить
                             sendText(exchange, text);
                             break;
                         }

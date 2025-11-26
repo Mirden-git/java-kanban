@@ -34,6 +34,9 @@ class SubtasksHandlerTest {
     void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
+        HttpTaskServer.taskManager.clearListOfTasks();
+        HttpTaskServer.taskManager.clearListOfSubtasks();
+        HttpTaskServer.taskManager.clearListOfEpics();
     }
 
     @AfterEach
@@ -42,6 +45,7 @@ class SubtasksHandlerTest {
     }
 
     private int createEpicAndGetId() throws IOException, InterruptedException {
+
         String body = """
                 {
                   "id": 0,
@@ -75,7 +79,10 @@ class SubtasksHandlerTest {
 
     @Test
     void shouldCreateSubtaskForEpic() throws IOException, InterruptedException {
-        int epicId = createEpicAndGetId();
+        HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
+        int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
+
+//        int epicId = createEpicAndGetId();
 
         String body = """
                 {
@@ -111,7 +118,10 @@ class SubtasksHandlerTest {
 
     @Test
     void shouldReturn406OnSubtaskTimeIntersection() throws IOException, InterruptedException {
-        int epicId = createEpicAndGetId();
+        HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
+        int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
+
+//        int epicId = createEpicAndGetId();
 
         String body1 = """
                 {

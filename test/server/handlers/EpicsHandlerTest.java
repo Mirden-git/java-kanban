@@ -18,6 +18,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +29,7 @@ class EpicsHandlerTest {
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .setPrettyPrinting()
             .create();
 
     @BeforeEach
@@ -65,9 +67,9 @@ class EpicsHandlerTest {
                 {
                   "id": 0,
                   "name": "Epic 1",
-                  "description": "Epic description",
-                  "startTime": null,
-                  "duration": null
+                  "description": "Epic desc",
+                  "startTime": "22.11.2025 11:00",
+                  "duration": "PT0M"
                 }
                 """;
 
@@ -76,8 +78,8 @@ class EpicsHandlerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("Content-Type", "application/json")
                 .build();
+        System.out.println("пост: " + post);
         HttpResponse<String> postResp = client.send(post, HttpResponse.BodyHandlers.ofString());
-        System.out.println(postResp.body());
         assertEquals(201, postResp.statusCode());
 
         HttpRequest getAll = HttpRequest.newBuilder()
@@ -85,6 +87,7 @@ class EpicsHandlerTest {
                 .GET()
                 .build();
         HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        System.out.println(getResp.body());
         System.out.println(getResp.body());
         Epic[] epics = gson.fromJson(getResp.body(), Epic[].class);
 
@@ -109,7 +112,9 @@ class EpicsHandlerTest {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .header("Content-Type", "application/json")
                 .build();
-        client.send(post, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> postResp = client.send(post, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(201, postResp.statusCode());
 
         HttpRequest getAll = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics"))
@@ -118,11 +123,15 @@ class EpicsHandlerTest {
         HttpResponse<String> getResp = client.send(getAll, HttpResponse.BodyHandlers.ofString());
         Epic[] epics = gson.fromJson(getResp.body(), Epic[].class);
 
-        Epic created = java.util.Arrays.stream(epics)
+        Epic created = Arrays.stream(epics)
                 .filter(e -> "Epic for getById".equals(e.getName()))
                 .findFirst()
                 .orElseThrow();
 
+//        int epicId = HttpTaskServer.taskManager.getEpics().getLast().getId();
+//        System.out.println("эпик: " + epicId);
+//        HttpTaskServer.taskManager.addSubtask("Подзадача","Описание", epicId,
+//                LocalDateTime.of(2025, 1, 1, 14, 0), Duration.ofMinutes(60));
         HttpRequest getById = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics/" + created.getId()))
                 .GET()

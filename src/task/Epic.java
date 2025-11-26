@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Epic extends Task {
     private List<Integer> subtasks = new ArrayList<>();
-    private LocalDateTime endTime;
+    private LocalDateTime endTime = getStartTime();
 
     public Epic(int id, String name, String description, LocalDateTime startTime, Duration duration) {
         super(id, name, description, startTime, duration);
