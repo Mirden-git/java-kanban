@@ -30,18 +30,18 @@ class HistoryHandlerTest {
             .create();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
     }
 
     @AfterEach
-    void afterEach() {
+    public void afterEach() {
         HttpTaskServer.stop();
     }
 
     @Test
-    void shouldReturnHistoryAfterAccessingTask() throws IOException, InterruptedException {
+    public void shouldReturnHistoryAfterAccessingTask() throws IOException, InterruptedException {
         HttpRequest historyReq1 = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/history"))
                 .GET()

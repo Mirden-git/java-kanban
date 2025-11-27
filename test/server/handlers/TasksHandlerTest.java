@@ -32,7 +32,7 @@ class TasksHandlerTest {
             .create();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
         HttpTaskServer.taskManager.clearListOfTasks();
@@ -41,12 +41,12 @@ class TasksHandlerTest {
     }
 
     @AfterEach
-    void afterEach() {
+    public void afterEach() {
         HttpTaskServer.stop();
     }
 
     @Test
-    void shouldReturnEmptyListWhenNoTasks() throws IOException, InterruptedException {
+    public void shouldReturnEmptyListWhenNoTasks() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks"))
                 .GET()
@@ -60,7 +60,7 @@ class TasksHandlerTest {
     }
 
     @Test
-    void shouldCreateTaskOnPostAndReturn201() throws IOException, InterruptedException {
+    public void shouldCreateTaskOnPostAndReturn201() throws IOException, InterruptedException {
         String body = """
                 {
                   "id": 0,
@@ -92,7 +92,7 @@ class TasksHandlerTest {
     }
 
     @Test
-    void shouldReturnTaskById() throws IOException, InterruptedException {
+    public void shouldReturnTaskById() throws IOException, InterruptedException {
         String body = """
                 {
                   "id": 0,
@@ -134,7 +134,7 @@ class TasksHandlerTest {
     }
 
     @Test
-    void shouldReturn404ForUnknownTaskId() throws IOException, InterruptedException {
+    public void shouldReturn404ForUnknownTaskId() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/tasks/999999"))
                 .GET()
@@ -144,7 +144,7 @@ class TasksHandlerTest {
     }
 
     @Test
-    void shouldDeleteTaskAndReturn200() throws IOException, InterruptedException {
+    public void shouldDeleteTaskAndReturn200() throws IOException, InterruptedException {
         String body = """
                 {
                   "id": 0,
@@ -182,7 +182,7 @@ class TasksHandlerTest {
     }
 
     @Test
-    void shouldReturn406OnTimeIntersection() throws IOException, InterruptedException {
+    public void shouldReturn406OnTimeIntersection() throws IOException, InterruptedException {
         String body1 = """
                 {
                   "id": 0,

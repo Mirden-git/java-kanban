@@ -31,7 +31,7 @@ class SubtasksHandlerTest {
             .create();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
         HttpTaskServer.taskManager.clearListOfTasks();
@@ -40,12 +40,12 @@ class SubtasksHandlerTest {
     }
 
     @AfterEach
-    void afterEach() {
+    public void afterEach() {
         HttpTaskServer.stop();
     }
 
     @Test
-    void shouldCreateSubtaskForEpic() throws IOException, InterruptedException {
+    public void shouldCreateSubtaskForEpic() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
         int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
 
@@ -82,7 +82,7 @@ class SubtasksHandlerTest {
     }
 
     @Test
-    void shouldReturn406OnSubtaskTimeIntersection() throws IOException, InterruptedException {
+    public void shouldReturn406OnSubtaskTimeIntersection() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.addEpic("A", "B", null, Duration.ZERO);
         int epicId = HttpTaskServer.taskManager.getEpics().getFirst().getId();
 

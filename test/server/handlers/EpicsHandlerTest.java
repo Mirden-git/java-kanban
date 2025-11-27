@@ -33,7 +33,7 @@ class EpicsHandlerTest {
             .create();
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
         HttpTaskServer.taskManager.clearListOfTasks();
@@ -42,12 +42,12 @@ class EpicsHandlerTest {
     }
 
     @AfterEach
-    void afterEach() {
+    public void afterEach() {
         HttpTaskServer.stop();
     }
 
     @Test
-    void shouldReturnEmptyEpicsListInitially() throws IOException, InterruptedException {
+    public void shouldReturnEmptyEpicsListInitially() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics"))
                 .GET()
@@ -62,7 +62,7 @@ class EpicsHandlerTest {
     }
 
     @Test
-    void shouldCreateEpicOnPost() throws IOException, InterruptedException {
+    public void shouldCreateEpicOnPost() throws IOException, InterruptedException {
         String body = """
                 {
                   "id": 0,
@@ -93,7 +93,7 @@ class EpicsHandlerTest {
     }
 
     @Test
-    void shouldReturnEpicById() throws IOException, InterruptedException {
+    public void shouldReturnEpicById() throws IOException, InterruptedException {
         String body = """
                 {
                   "id": 0,
@@ -136,7 +136,7 @@ class EpicsHandlerTest {
     }
 
     @Test
-    void shouldReturn404ForUnknownEpicId() throws IOException, InterruptedException {
+    public void shouldReturn404ForUnknownEpicId() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/epics/999999"))
                 .GET()

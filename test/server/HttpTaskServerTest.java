@@ -18,18 +18,18 @@ class HttpTaskServerTest {
     private static final String BASE_URL = "http://localhost:8080";
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = HttpClient.newHttpClient();
         HttpTaskServer.start();
     }
 
     @AfterEach
-    void afterEach() {
+    public void afterEach() {
         HttpTaskServer.stop();
     }
 
     @Test
-    void shouldReturn404OnUnknownEndpoint() throws IOException, InterruptedException {
+    public void shouldReturn404OnUnknownEndpoint() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/unknown"))
                 .GET()
