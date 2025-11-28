@@ -92,7 +92,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         List<Epic> epics = manager.getEpics();
         int epicId = epics.getLast().getId();
         manager.addSubtask("Подзадача 1", "Описание подзадачи 1",
-                epicId, dateTime(12, 0), duration(15));
+                epicId, dateTime(13, 0), duration(15));
         List<Task> tasks = manager.getTasks();
         List<Subtask> subtasks = manager.getSubtasks();
         int taskId = tasks.getLast().getId();
@@ -113,7 +113,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         List<Task> tasks = manager.getTasks();
         int taskId = tasks.getLast().getId();
         Task firstTask = new Task(taskId, "Задача с заданным id", "заданный id = 1",
-                dateTime(12, 0), duration(15));
+                dateTime(13, 0), duration(15));
         manager.addTask(firstTask);
         assertEquals(2, manager.getTasks().size());
     }
@@ -207,11 +207,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void timeIntersectionTrue() {
+    void TaskWithTimeIntersectionShouldNotBeAdded() {
         manager.addTask("задача 1", "Описание 1", dateTime(12, 0), duration(60));
         manager.addTask("задача 2", "Описание 2", dateTime(12, 30), duration(60));
-        Task b = manager.getTasks().getLast();
-        assertTrue(manager.isTimeIntersectionWithAllTasks(b));
+        int tasksQuantity = manager.getTasks().size();
+        assertEquals(1, tasksQuantity);
     }
 
     @Test
